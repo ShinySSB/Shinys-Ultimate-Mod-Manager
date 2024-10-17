@@ -4,8 +4,14 @@ import os
 
 def main():
     switch_sd = get_directory('Please input the root of your SD card.')
+
+    switch_sd = switch_sd.rstrip("/\\")
+
     mods_folder = os.path.normpath(os.path.join(switch_sd, 'ultimate', 'mods'))
     skyline_plugins_folder = os.path.normpath(os.path.join(switch_sd, "atmosphere", "contents", "01006A800016E000", "romfs", "skyline", "plugins"))
+
+    ensure_directory_exists(mods_folder)
+    ensure_directory_exists(skyline_plugins_folder)
 
     print('Mods folder: ' + mods_folder)
     print('Skyline plugins folder: ' + skyline_plugins_folder)
@@ -17,6 +23,13 @@ def main():
             print(mod.name)
     else:
         print("No Mods found")
+
+def ensure_directory_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        print("Directory '" + directory + "' created")
+    else:
+        print("Directory '" + directory + "' already exists")
 
 def get_directory(prompt):
     print(prompt)

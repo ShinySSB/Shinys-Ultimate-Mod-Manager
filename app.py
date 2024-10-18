@@ -2,6 +2,7 @@ from os import scandir
 from tkinter.filedialog import askdirectory
 import os
 
+
 def main():
     switch_sd = get_directory('Please input the root of your SD card.')
 
@@ -14,14 +15,30 @@ def main():
     print('Mods folder: ' + mods_folder)
     print('Skyline plugins folder: ' + skyline_plugins_folder)
 
-    mods_list = build_mod_hierarchy(mods_folder)
-    if mods_list:
-        print("Mods found:")
-        for mod in mods_list:
-            print(mod.name)
-            list(scandir(mod))
-    else:
-        print("No Mods found")
+    parse_mods(mods_folder)
+
+def parse_mods(mods):
+    for mod in os.listdir(mods):
+        mod_path = os.path.join(mods, mod)
+        if os.path.isdir(mod_path):
+            for folder in os.listdir(mod_path):
+                if not os.path.isdir(os.path.join(mod_path, folder)):
+                    continue
+
+                match folder:
+                    case 'fighter':
+                        print(f'{mod} affects a fighter.')
+                    case 'ui':
+                        print(f'{mod} affects UI.')
+                    case 'stage':
+                        print(f'{mod} affects a stage.')
+                    case 'effect':
+                        print(f'{mod} affects vfx.')
+                    case 'sound':
+                        print(f'{mod} affects sound.')
+                    case _:
+                        print(f"Error: Folder '{os.path.join(mod_path, folder)}' is incompatible. "
+                              "Note it is unmodifiable in this manager currently.")
 
 def ensure_directory_exists(directory):
     if not os.path.exists(directory):
@@ -33,28 +50,16 @@ def ensure_directory_exists(directory):
 def get_directory(prompt):
     print(prompt)
     directory = askdirectory()
-    print("selected directory: " + directory)
+    print("Selected directory: " + directory)
     return directory
 
-def build_mod_hierarchy(mods_folder):
-    mod_hierarchy = {}
-    for root, dirs, files in os.walk(mods_folder):
-        current_level = mod_hierarchy
-        path_parts = root.split(os.sep)
-
-        for part in path_parts:
-            if part not in current_level:
-                current_level[part] = {}
-                current_level = current_level[part]
-
-        for file in files:
-            if parse_mod_filename(file):
-                current_level[file] = None
-
-    return mod_hierarchy
-
-def parse_mod_filename(filename):
-    if filename =
+def is_skin_slot(folder_name):
+    """Checks if the folder name matches a skin slot in smash ultimate."""
+    if folder_name.startswith('c') and len(folder_name) > 1 and folder_name[1:].isdigit():
+        # Convert to integer to check the range
+        slot_number = int(folder_name[1:])
+        return 0 <= slot_number <= 50
+    return False
 
 def list_directory_contents(path):
     try:

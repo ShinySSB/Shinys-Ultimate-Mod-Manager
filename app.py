@@ -1,7 +1,9 @@
+import sys
 from os import scandir
 from tkinter.filedialog import askdirectory
 import os
 
+# Dictionary mapping internal names to (fighter number, character name)
 FIGHTER_INFO = {
     'mario': ('1', 'Mario'),
     'donkey': ('2', 'Donkey Kong'),
@@ -98,11 +100,14 @@ FIGHTER_INFO = {
     'trail': ('82', 'Sora'),
 }
 
-
 def main():
     switch_sd = get_directory('Please input the root of your SD card.')
 
     mods_folder = os.path.normpath(os.path.join(switch_sd, 'ultimate', 'mods'))
+
+    if switch_sd and mods_folder:
+        os.chdir(mods_folder)
+
     skyline_plugins_folder = os.path.normpath(os.path.join(switch_sd, "atmosphere", "contents", "01006A800016E000", "romfs", "skyline", "plugins"))
 
     ensure_directory_exists(mods_folder)
@@ -113,41 +118,63 @@ def main():
 
     parse_mods(mods_folder)
 
-def parse_mods(mods):
-    mods_list = os.listdir(mods)
-    for mod in mods_list:
-        mod_path = os.path.join(mods, mod)
+def parse_mods(mods_folder):
+    for mod in os.listdir(mods_folder):
+        mod_path = os.path.join(mods_folder, mod)
         if os.path.isdir(mod_path):
-            for folder in os.listdir(mod_path):
-                folder_path = os.path.join(mod_path, folder)
+            parse_mod(mod, mod_path)
 
-                if not os.path.isdir(folder_path):
-                    continue
+def parse_mod(mod, mod_path):
+    for folder in os.listdir(mod_path):
+        folder_path = os.path.join(mod_path, folder)
 
-                match folder:
-                    case 'fighter':
-                        for fighter in os.listdir(folder_path):
-                            if fighter in FIGHTER_INFO:
-                                fighter_name = FIGHTER_INFO.get(fighter)[1]
-                                fighter_number = FIGHTER_INFO.get(fighter)[0]
-                                slot_folder = os.path.join(os.path.join(os.path.join(folder_path, os.path.join(fighter, os.path.join('model', 'body')))))
-                                for slot in os.listdir(slot_folder):
-                                    if slot == get_skin_slot(slot):
-                                        print(f"{mod} affects 'fighter' folder of {fighter_name} - {slot}")
-                                    else:
-                                        print(f"{slot} - {get_skin_slot(os.path.join(slot_folder, slot))}")
-                    case 'ui':
-                        #print(f'{mod} affects UI.')
-                        continue
-                    case 'stage':
-                        print(f'{mod} affects a stage.')
-                    case 'effect':
-                        print(f'{mod} affects vfx.')
-                    case 'sound':
-                        print(f'{mod} affects sound.')
-                    case _:
-                        print(f"Error: Folder '{folder_path}' is incompatible. "
-                              "Note it is unmodifiable in this manager currently.")
+        if not os.path.isdir(folder_path):
+            continue
+
+        match folder:
+            case 'fighter':
+                parse_fighter_mod(folder_path)
+            case 'ui':
+                #print(f'{mod} affects UI.')
+                continue
+            case 'stage':
+                print(f'{mod} affects a stage.')
+            case 'effect':
+                print(f'{mod} affects VFX.')
+            case 'sound':
+                print(f'{mod} affects sound.')
+            case _:
+                print(f"Error: Folder '{folder_path}' is incompatible. "
+                      f"Note it is unmodifiable in this manager currently.")
+
+def parse_fighter_mod(folder_path):
+    for fighter in os.listdir(folder_path):
+        fighter_path = os.path.join(folder_path, fighter)
+        if fighter in FIGHTER_INFO:
+            fighter_number, fighter_name = FIGHTER_INFO[fighter]
+            print(f"Found fighter mod for {fighter_name} (Internal name: {fighter}, Fighter number: {fighter_number})")
+            try:
+                parse_skin_slots(fighter_path)
+            except FileNotFoundError:
+                print(f"File not found: {os.path.join(fighter_path, 'model', 'body')}")
+
+def parse_skin_slots(fighter_path):
+    model_path = os.path.join(fighter_path, 'model', 'body')
+    if os.path.exists(model_path):
+        for folder in os.listdir(model_path):
+            if is_skin_slot(folder):
+                print(f"  Slot: {folder}")
+            else:
+                print(f"Invalid folder: {os.path.join(model_path, folder)}")
+
+def is_skin_slot(folder_name):
+    """Checks if the folder name matches a skin slot in smash ultimate ranging from c00 to c49."""
+    if folder_name.startswith('c') and len(folder_name) == 3 and folder_name[1:].isdigit():
+        slot_number = int(folder_name[1:])
+        return 0 <= slot_number <= 49
+    else:
+        print("Invalid skin slot name")
+        return False
 
 def ensure_directory_exists(directory):
     if not os.path.exists(directory):
@@ -162,15 +189,6 @@ def get_directory(prompt):
     print("Selected directory: " + directory)
     return directory
 
-def get_skin_slot(folder_name):
-    """Checks if the folder name matches a skin slot in smash ultimate ranging from c00 to c49."""
-    if folder_name.startswith('c') and len(folder_name) == 3 and folder_name[1:].isdigit():
-        # Convert to integer to check the range
-        slot_number = int(folder_name[1:])
-        return 00 <= slot_number <= 49
-    else:
-        print("Invalid skin slot name")
-        return False
 
 def list_directory_contents(path):
     try:

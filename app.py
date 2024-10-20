@@ -1,3 +1,4 @@
+import shutil
 import sys
 from os import scandir
 from tkinter.filedialog import askdirectory
@@ -110,85 +111,101 @@ def main():
 
     skyline_plugins_folder = os.path.normpath(os.path.join(switch_sd, "atmosphere", "contents", "01006A800016E000", "romfs", "skyline", "plugins"))
 
-    ensure_directory_exists(mods_folder)
-    ensure_directory_exists(skyline_plugins_folder)
-
     print('Mods folder: ' + mods_folder)
     print('Skyline plugins folder: ' + skyline_plugins_folder)
 
-    parse_mods(mods_folder)
+    mod_tree = build_mod_tree(mods_folder)
+    print_mod_tree(mod_tree)
+    run_file_manager(mod_tree, mods_folder)
 
-def parse_mods(mods_folder):
-    for mod in os.listdir(mods_folder):
-        mod_path = os.path.join(mods_folder, mod)
-        if os.path.isdir(mod_path):
-            parse_mod(mod, mod_path)
+def build_mod_tree(path):
+    tree = {}
 
-def parse_mod(mod, mod_path):
-    for folder in os.listdir(mod_path):
-        folder_path = os.path.join(mod_path, folder)
+    for root, dirs, files in os.walk(path):
+        path_parts = root.split(os.sep)
 
-        if not os.path.isdir(folder_path):
+        current_level = tree
+        for part in path_parts:
+            if part not in current_level:
+                current_level[part] = {'_subdirs': {}, '_files': []}
+                current_level = current_level[part]['_subdirs']
+
+        current_level['_files'] = files
+        for dirname in dirs:
+            if dirname not in current_level:
+                current_level[dirname] = {'_subdirs': {}, '_files': []}
+
+    return tree
+
+def print_mod_tree(tree, indent=0):
+    for key, value in tree.items():
+        if key == '_files':
+            for file in value:
+                print(' ' * indent + f'-{file}')
+        else:
+            print(' ' * indent + f'/{key}')
+            print_mod_tree(value['_subdirs'], indent + 4)
+            if value['_files']:
+                for file in value['_files']:
+                    print(' ' * (indent + 8) + file)
+
+def run_file_manager(mod_tree, current_path):
+    while True:
+        command = input(f"{current_path}> ").split()
+        if not command:
             continue
-
-        match folder:
-            case 'fighter':
-                parse_fighter_mod(folder_path)
-            case 'ui':
-                #print(f'{mod} affects UI.')
-                continue
-            case 'stage':
-                print(f'{mod} affects a stage.')
-            case 'effect':
-                print(f'{mod} affects VFX.')
-            case 'sound':
-                print(f'{mod} affects sound.')
-            case _:
-                print(f"Error: Folder '{folder_path}' is incompatible. "
-                      f"Note it is unmodifiable in this manager currently.")
-
-def parse_fighter_mod(folder_path):
-    for fighter in os.listdir(folder_path):
-        fighter_path = os.path.join(folder_path, fighter)
-        if fighter in FIGHTER_INFO:
-            fighter_number, fighter_name = FIGHTER_INFO[fighter]
-            print(f"Found fighter mod for {fighter_name} (Internal name: {fighter}, Fighter number: {fighter_number})")
-            try:
-                parse_skin_slots(fighter_path)
-            except FileNotFoundError:
-                print(f"File not found: {os.path.join(fighter_path, 'model', 'body')}")
-
-def parse_skin_slots(fighter_path):
-    model_path = os.path.join(fighter_path, 'model', 'body')
-    if os.path.exists(model_path):
-        for folder in os.listdir(model_path):
-            if is_skin_slot(folder):
-                print(f"  Slot: {folder}")
+        cmd = command[0].lower()
+        if cmd == 'ls':
+            list_contents(current_path)
+        elif cmd == 'cd':
+            if len(command) > 1:
+                new_path = os.path.join(current_path, command[1])
+                if os.path.isdir(new_path):
+                    current_path = new_path
+                else:
+                    print(f'{current_path} {command[1:]} does not exist')
             else:
-                print(f"Invalid folder: {os.path.join(model_path, folder)}")
+                print("Usage: cd <path>")
+        elif cmd == 'mkdir':
+            if len(command) > 1:
+                os.mkdir(os.path.join(current_path, command[1]))
+            else:
+                print("Usage: mkdir <path>")
+        elif cmd == 'rmdir':
+            if len(command) > 1:
+                target_path = os.path.join(current_path, command[1])
+                if os.path.isdir(target_path):
+                    shutil.rmtree(target_path)
+                elif os.path.isfile(target_path):
+                    os.remove(target_path)
+                else:
+                    print(f"{target_path} does not exist")
+            else:
+                print("Usage: rmdir <path>")
+        elif cmd == 'exit':
+            break
+        else:
+            print("Unknown command: ", cmd)
+        update_mod_tree(mod_tree, current_path)
 
-def is_skin_slot(folder_name):
-    """Checks if the folder name matches a skin slot in smash ultimate ranging from c00 to c49."""
-    if folder_name.startswith('c') and len(folder_name) == 3 and folder_name[1:].isdigit():
-        slot_number = int(folder_name[1:])
-        return 0 <= slot_number <= 49
-    else:
-        print("Invalid skin slot name")
-        return False
+def list_contents(path):
+    entries = list_directory_contents(path)
+    for entry in entries:
+        if entry.is_dir():
+            print(f'DIR: {entry.name}')
+        else:
+            print(f'FILE: {entry.name}')
 
-def ensure_directory_exists(directory):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-        print("Directory '" + directory + "' created")
-    else:
-        print("Directory '" + directory + "' already exists")
+def update_mod_tree(tree, path):
+    new_tree = build_mod_tree(path)
+    tree.clear()
+    tree.update(new_tree)
 
 def get_directory(prompt):
     print(prompt)
-    directory = askdirectory()
+    directory = os.path.normpath(askdirectory())
     print("Selected directory: " + directory)
     return directory
-
 
 def list_directory_contents(path):
     try:

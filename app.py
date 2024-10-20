@@ -101,13 +101,59 @@ FIGHTER_INFO = {
     'trail': ('82', 'Sora'),
 }
 
+STAGE_INFO = {
+    '75m': '75 m',
+    'animal_city': 'Town and City',
+    'animal_island': 'Tortimer Island',
+    'animal_village': 'Smashville',
+    'balloonfight': 'Balloon Fight',
+    'battlefield': 'Battlefield',
+    'battlefield_l': 'Big Battlefield',
+    'battlefield_s': 'Small Battlefield',
+    'bayo_clock': 'Umbra Clock Tower',
+    'brave_altar': "Yggdrasil's altar",
+    'buddy_spiral': 'Spiral Mountain',
+    'demon_dojo': 'Mishima Dojo',
+    'dk_jungle': 'Kongo Jungle',
+    'dk_lodge': 'Jungle Japes',
+    'dk_waterfall': 'Kongo Falls',
+    'dolly_stadium': 'King of Fighters Stadium',
+    'dracula_castle': "Dracula's Castle",
+    'duckhunt': 'Duck Hunt',
+    'end': 'Final Destination',
+    'fe_arena': 'Arena Ferox',
+    'fe_colloseum': 'Coliseum',
+    'fe_shrine': 'Garreg Mach Monastery',
+    'fe_siege': 'Castle Siege',
+    'ff_cave': 'Northern Cave',
+    'ff_midgar': 'Midgar',
+    'flatzonex': 'Flat Zone X',
+    'fox_corneria': 'Corneria',
+    'fox_lylatcruise': 'Lylat Cruise',
+    'fox_venom': 'Venom',
+    'fzero_bigblue': 'Big Blue',
+    'fzero_mutecity3ds': 'Mute City SNES', #What the actual fuck nintendo
+    'fzero_porttown': 'Port Town Aero Drive',
+    'homeruncontest': ''
+}
+
 def main():
-    switch_sd = get_directory('Please input the root of your SD card.')
+
+    switch_sd = ''
+    while not os.path.exists(switch_sd):
+        print('Please input the root of your SD card.')
+        switch_sd = askdirectory()
+        print("Selected directory: " + switch_sd)
+        if os.path.exists(switch_sd) and os.path.isdir(switch_sd):
+            break
+        else:
+            continue
 
     mods_folder = os.path.normpath(os.path.join(switch_sd, 'ultimate', 'mods'))
+    if not os.path.isdir(mods_folder):
+        print('Cannot find mods folder in directory. Make sure you select the root of your SD card. '
+              r'If you have no mods folder on your SD card, create SD:\ultimate\mods\'')
 
-    if switch_sd and mods_folder:
-        os.chdir(mods_folder)
 
     skyline_plugins_folder = os.path.normpath(os.path.join(switch_sd, "atmosphere", "contents", "01006A800016E000", "romfs", "skyline", "plugins"))
 
@@ -151,7 +197,7 @@ def print_mod_tree(tree, indent=0):
 
 def run_file_manager(mod_tree, current_path):
     while True:
-        command = input(f"{current_path}> ").split()
+        command = input(f"{current_path}> ").strip().split()
         if not command:
             continue
         cmd = command[0].lower()
@@ -159,11 +205,12 @@ def run_file_manager(mod_tree, current_path):
             list_contents(current_path)
         elif cmd == 'cd':
             if len(command) > 1:
-                new_path = os.path.join(current_path, command[1])
+                args = ' '.join(command[1:])
+                new_path = os.path.join(current_path, args)
                 if os.path.isdir(new_path):
                     current_path = new_path
                 else:
-                    print(f'{current_path} {command[1:]} does not exist')
+                    print(f'{current_path} {args} does not exist')
             else:
                 print("Usage: cd <path>")
         elif cmd == 'mkdir':
@@ -200,12 +247,6 @@ def update_mod_tree(tree, path):
     new_tree = build_mod_tree(path)
     tree.clear()
     tree.update(new_tree)
-
-def get_directory(prompt):
-    print(prompt)
-    directory = os.path.normpath(askdirectory())
-    print("Selected directory: " + directory)
-    return directory
 
 def list_directory_contents(path):
     try:

@@ -46,6 +46,7 @@ FIGHTER_INFO = {
     'snake': ('31', 'Snake'),
     'ike': ('32', 'Ike'),
     'ptrainer': ('33T', 'Pokémon Trainer'),
+    'ptrainer_low': ('33T', 'Pokémon Trainer (Low)'),
     'pzenigame': ('33', 'Squirtle'),
     'pfushigisou': ('34', 'Ivysaur'),
     'plizardon': ('35', 'Charizard'),
@@ -99,6 +100,10 @@ FIGHTER_INFO = {
     'elight': ('80', 'Mythra'),
     'demon': ('81', 'Kazuya'),
     'trail': ('82', 'Sora'),
+    #'common': '',
+    #'miienemyf': '',
+    #'miienemyg': '',
+    #'miienemys': '',
 }
 
 STAGE_INFO = {
@@ -111,7 +116,7 @@ STAGE_INFO = {
     'battlefield_l': 'Big Battlefield',
     'battlefield_s': 'Small Battlefield',
     'bayo_clock': 'Umbra Clock Tower',
-    #"'bonusgame': '',
+    #'bonusgame': '',
     #'bossstage_dracula': '',
     #'bossstage_final1': '',
     #'bossstage_final2': '',

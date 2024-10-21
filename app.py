@@ -233,6 +233,7 @@ STAGE_INFO = {
     'xeno_gaur': 'Gaur Plain',
     'yoshi_cartboard': "Yoshi's Story",
     'yoshi_island': "Yoshi's Island",
+    'yoshi_story': 'Super Happy Tree',
     'yoshi_yoster': "Yoshi's Island (Melee)",
     'zelda_gerudo': 'Gerudo Valley',
     'zelda_greatbay': 'Great Bay',

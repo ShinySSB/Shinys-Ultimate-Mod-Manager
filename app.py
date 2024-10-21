@@ -253,7 +253,7 @@ def main():
     print('Skyline plugins folder: ' + skyline_plugins_folder)
 
     mod_tree = build_mod_tree(mods_folder)
-    run_file_manager(mod_tree, mods_folder, switch_sd, mods_folder)
+    run_file_manager(mod_tree, mods_folder)
 
 def ask_user_for_path(prompt):
     result = ""
@@ -301,7 +301,8 @@ def print_mod_tree(tree, indent=0):
                 for file in value['_files']:
                     print(' ' * (indent + 8) + file)
 
-def run_file_manager(mod_tree, current_path, switch_sd, mods_folder):
+def run_file_manager(mod_tree, current_path):
+    mods_folder = current_path
     while True:
         command = input(f"{current_path}> ").strip().split()
         if not command:

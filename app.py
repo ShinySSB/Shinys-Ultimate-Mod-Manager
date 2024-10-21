@@ -1,8 +1,18 @@
-import shutil
-import sys
-from os import scandir
 import os
+import shutil
+from os import scandir
 from tkinter.filedialog import askdirectory
+
+COMMANDS = {
+    'ls': 'ls',
+    'cd': 'cd',
+    'up': 'up',
+    'mkdir': 'mkdir',
+    'rmdir': 'rmdir',
+    'get_modslot': 'get modslot',
+    'help': 'help',
+    'exit': 'exit',
+}
 
 # Dictionary mapping internal names to (fighter number, character name)
 FIGHTER_INFO = {
@@ -262,7 +272,6 @@ def main():
     run_file_manager(mod_tree, mods_folder)
 
 def ask_user_for_path(prompt):
-    result = ""
     while True:
         print(prompt)
         result = askdirectory()
@@ -314,69 +323,35 @@ def run_file_manager(mod_tree, current_path):
         if not command:
             continue
         cmd = command[0].lower()
-        match cmd:
 
+        match cmd:
             case 'ls':
                 list_contents(current_path)
 
             case 'cd':
-                if len(command) > 1:
-                    args = ' '.join(command[1:])
-                    new_path = os.path.join(current_path, args)
-                    if os.path.isdir(new_path):
-                        current_path = new_path
-                        list_contents(current_path)
-                    else:
-                        print(f'{current_path} {args} does not exist')
-                else:
-                    print("Usage: cd <path>")
+                current_path = change_directory(command, current_path)
 
             case 'up':
-                new_path = os.path.dirname(current_path)
-                if os.path.commonpath([new_path, mods_folder]) == mods_folder:
-                    current_path = new_path
-                    list_contents(current_path)
-                else:
-                    print(f'Cannot move up. {new_path} is outside of the mods folder.')
+                current_path = move_up_directory(current_path, mods_folder)
 
             case 'mkdir':
-                if len(command) > 1:
-                    os.mkdir(os.path.join(current_path, command[1]))
-                else:
-                    print("Usage: mkdir <path>")
+                create_directory(command, current_path)
 
             case 'rmdir':
-                if len(command) > 1:
-                    target_path = os.path.join(current_path, command[1])
-                    if os.path.isdir(target_path):
-                        shutil.rmtree(target_path)
-                    elif os.path.isfile(target_path):
-                        os.remove(target_path)
-                    else:
-                        print(f"{target_path} does not exist")
-                else:
-                    print("Usage: rmdir <path>")
+                remove_directory(command, current_path)
 
-            case 'get modslot': #WIP
-                continue
+            case 'get_modslot': #WIP
+                get_modslots(command, current_path)
 
             case 'help':
-                print(f'    ')
-                print(f'Commands: ')
-                print(f'    ls           - lists contents of current directory.')
-                print(f'    cd <path>    - changes directory.')
-                print(f'    up           - goes up a level in the tree hierarchy.')
-                print(f'    mkdir <name> - creates directory in current directory.')
-                print(f'    rmdir <name> - deletes directory in current directory.')
-                print(f'    get modslot  - WIP.')
-                print(f'    exit         - exit the program.')
-                print(f'    ')
+                display_help()
 
             case 'exit':
                 break
 
             case _:
                 print("Unknown command: ", cmd)
+
         update_mod_tree(mod_tree, current_path)
 
 def list_contents(path):
@@ -386,6 +361,69 @@ def list_contents(path):
             print(f'DIR: {entry.name}')
         else:
             print(f'FILE: {entry.name}')
+
+def change_directory(command, current_path):
+    if len(command) > 1:
+        args = ' '.join(command[1:])
+        new_path = os.path.join(current_path, args)
+        if os.path.isdir(new_path):
+            return new_path
+        else:
+            print(f'{new_path} {args} does not exist')
+    else:
+        print("Usage: cd <path>")
+
+def move_up_directory(current_path, mods_folder):
+    new_path = os.path.dirname(current_path)
+    if os.path.commonpath([new_path, mods_folder]) == mods_folder:
+        current_path = new_path
+        list_contents(current_path)
+    else:
+        print(f'Cannot move up. {new_path} is outside of the mods folder.')
+    return current_path
+
+def create_directory(command, current_path):
+    if len(command) > 1:
+        directory_name = ' '.join(command[1:])
+        os.mkdir(os.path.join(current_path, directory_name))
+    else:
+        print("Usage: mkdir <path>")
+
+def remove_directory(command, current_path):
+    if len(command) > 1:
+        directory_name = ' '.join(command[1:])
+        target_path = os.path.join(current_path, directory_name)
+        if os.path.isdir(target_path):
+            shutil.rmtree(target_path)
+        elif os.path.isfile(target_path):
+            os.remove(target_path)
+        else:
+            print(f"{target_path} does not exist")
+    else:
+        print("Usage: rmdir <path>")
+
+def get_modslots(command, current_path):
+    modslots = {}
+    for root, dirs, files in os.walk(current_path):
+        for dirname in dirs:
+            match dirname:
+                case 'fighter':
+                    pass
+
+
+
+
+def display_help():
+    print(f'    ')
+    print(f'Commands: ')
+    print(f'    ls           - lists contents of current directory.')
+    print(f'    cd <path>    - changes directory.')
+    print(f'    up           - goes up a level in the tree hierarchy.')
+    print(f'    mkdir <name> - creates directory in current directory.')
+    print(f'    rmdir <name> - deletes directory in current directory.')
+    print(f'    get modslot  - WIP.')
+    print(f'    exit         - exit the program.')
+    print(f'    ')
 
 def update_mod_tree(tree, path):
     new_tree = build_mod_tree(path)

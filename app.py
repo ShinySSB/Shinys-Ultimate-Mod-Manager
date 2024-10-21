@@ -1,8 +1,8 @@
 import shutil
 import sys
 from os import scandir
-from tkinter.filedialog import askdirectory
 import os
+from tkinter.filedialog import askdirectory
 
 # Dictionary mapping internal names to (fighter number, character name)
 FIGHTER_INFO = {
@@ -242,30 +242,33 @@ STAGE_INFO = {
 
 def main():
 
-    switch_sd = ''
-    while not os.path.exists(switch_sd):
-        print('Please input the root of your SD card.')
-        switch_sd = askdirectory()
-        print("Selected directory: " + switch_sd)
-        if os.path.exists(switch_sd) and os.path.isdir(switch_sd):
-            break
-        else:
-            continue
-
+    switch_sd = ask_user_for_path('Please input the root of your SD card.')
     mods_folder = os.path.normpath(os.path.join(switch_sd, 'ultimate', 'mods'))
-    if not os.path.isdir(mods_folder):
-        print('Cannot find mods folder in directory. Make sure you select the root of your SD card. '
-              r'If you have no mods folder on your SD card, create SD:\ultimate\mods\'')
 
-
-    skyline_plugins_folder = os.path.normpath(os.path.join(switch_sd, "atmosphere", "contents", "01006A800016E000", "romfs", "skyline", "plugins"))
+    skyline_plugins_folder = os.path.normpath(os.path.join(
+        switch_sd, "atmosphere", "contents", "01006A800016E000", "romfs", "skyline", "plugins"
+    ))
 
     print('Mods folder: ' + mods_folder)
     print('Skyline plugins folder: ' + skyline_plugins_folder)
 
     mod_tree = build_mod_tree(mods_folder)
-    print_mod_tree(mod_tree)
-    run_file_manager(mod_tree, mods_folder)
+    run_file_manager(mod_tree, mods_folder, switch_sd, mods_folder)
+
+def ask_user_for_path(prompt):
+    result = ""
+    while True:
+        print(prompt)
+        result = askdirectory()
+        print("Selected directory: " + result)
+        mods_folder = os.path.normpath(os.path.join(result, 'ultimate', 'mods'))
+        if not os.path.exists(result) or not os.path.isdir(result):
+            print("Not a valid directory. Please try again")
+        elif not os.path.isdir(mods_folder):
+            print('Cannot find mods folder in directory. Make sure you select the root of your SD card. '
+              r'If you have no mods folder on your SD card, create SD:\ultimate\mods\'')
+        else:
+            return result
 
 def build_mod_tree(path):
     tree = {}
@@ -298,44 +301,75 @@ def print_mod_tree(tree, indent=0):
                 for file in value['_files']:
                     print(' ' * (indent + 8) + file)
 
-def run_file_manager(mod_tree, current_path):
+def run_file_manager(mod_tree, current_path, switch_sd, mods_folder):
     while True:
         command = input(f"{current_path}> ").strip().split()
         if not command:
             continue
         cmd = command[0].lower()
-        if cmd == 'ls':
-            list_contents(current_path)
-        elif cmd == 'cd':
-            if len(command) > 1:
-                args = ' '.join(command[1:])
-                new_path = os.path.join(current_path, args)
-                if os.path.isdir(new_path):
+        match cmd:
+
+            case 'ls':
+                list_contents(current_path)
+
+            case 'cd':
+                if len(command) > 1:
+                    args = ' '.join(command[1:])
+                    new_path = os.path.join(current_path, args)
+                    if os.path.isdir(new_path):
+                        current_path = new_path
+                        list_contents(current_path)
+                    else:
+                        print(f'{current_path} {args} does not exist')
+                else:
+                    print("Usage: cd <path>")
+
+            case 'up':
+                new_path = os.path.dirname(current_path)
+                if os.path.commonpath([new_path, mods_folder]) == mods_folder:
                     current_path = new_path
+                    list_contents(current_path)
                 else:
-                    print(f'{current_path} {args} does not exist')
-            else:
-                print("Usage: cd <path>")
-        elif cmd == 'mkdir':
-            if len(command) > 1:
-                os.mkdir(os.path.join(current_path, command[1]))
-            else:
-                print("Usage: mkdir <path>")
-        elif cmd == 'rmdir':
-            if len(command) > 1:
-                target_path = os.path.join(current_path, command[1])
-                if os.path.isdir(target_path):
-                    shutil.rmtree(target_path)
-                elif os.path.isfile(target_path):
-                    os.remove(target_path)
+                    print(f'Cannot move up. {new_path} is outside of the mods folder.')
+
+            case 'mkdir':
+                if len(command) > 1:
+                    os.mkdir(os.path.join(current_path, command[1]))
                 else:
-                    print(f"{target_path} does not exist")
-            else:
-                print("Usage: rmdir <path>")
-        elif cmd == 'exit':
-            break
-        else:
-            print("Unknown command: ", cmd)
+                    print("Usage: mkdir <path>")
+
+            case 'rmdir':
+                if len(command) > 1:
+                    target_path = os.path.join(current_path, command[1])
+                    if os.path.isdir(target_path):
+                        shutil.rmtree(target_path)
+                    elif os.path.isfile(target_path):
+                        os.remove(target_path)
+                    else:
+                        print(f"{target_path} does not exist")
+                else:
+                    print("Usage: rmdir <path>")
+
+            case 'get modslot': #WIP
+                continue
+
+            case 'help':
+                print(f'    ')
+                print(f'Commands: ')
+                print(f'    ls           - lists contents of current directory.')
+                print(f'    cd <path>    - changes directory.')
+                print(f'    up           - goes up a level in the tree hierarchy.')
+                print(f'    mkdir <name> - creates directory in current directory.')
+                print(f'    rmdir <name> - deletes directory in current directory.')
+                print(f'    get modslot  - WIP.')
+                print(f'    exit         - exit the program.')
+                print(f'    ')
+
+            case 'exit':
+                break
+
+            case _:
+                print("Unknown command: ", cmd)
         update_mod_tree(mod_tree, current_path)
 
 def list_contents(path):

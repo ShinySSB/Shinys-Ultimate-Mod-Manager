@@ -392,12 +392,32 @@ def remove_directory(command, current_path):
         print("Usage: rmdir <path>")
 
 def get_modslots(command, current_path):
-    modslots = {}
-    for root, dirs, files in os.walk(current_path):
-        for dirname in dirs:
-            match dirname:
-                case 'fighter':
-                    pass
+    modslots = []
+    paths = []
+    folders = []
+    for dirname in os.listdir(current_path):
+        folders.append(dirname)
+        paths.append(os.path.join(current_path, dirname))
+
+    for folder in folders:
+        match folder:
+            case 'fighter':
+                for path in paths:
+                    if os.path.isdir(path):
+                        for dirname in os.listdir(path):
+                            if dirname in FIGHTER_INFO.keys():
+                                try:
+
+                                    modslots.append((dirname, ''))
+                                except ValueError:
+                                    print(FIGHTER_INFO[dirname])
+
+            case 'ui':
+                pass
+
+    for item in modslots:
+        print(item)
+
 
 def display_help():
     print(f'    ')
@@ -407,7 +427,7 @@ def display_help():
     print(f'    up           - goes up a level in the tree hierarchy.')
     print(f'    mkdir <name> - creates directory in current directory.')
     print(f'    rmdir <name> - deletes directory in current directory.')
-    print(f'    get modslot  - WIP.')
+    print(f'    get_modslots  - WIP.')
     print(f'    exit         - exit the program.')
     print(f'    ')
 

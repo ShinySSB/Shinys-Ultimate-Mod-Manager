@@ -402,22 +402,37 @@ def get_modslots(command, current_path):
     for folder in folders:
         match folder:
             case 'fighter':
-                for path in paths:
-                    if os.path.isdir(path):
-                        for dirname in os.listdir(path):
-                            if dirname in FIGHTER_INFO.keys():
-                                try:
-
-                                    modslots.append((dirname, ''))
-                                except ValueError:
-                                    print(FIGHTER_INFO[dirname])
-
+                for subdir in get_fighter_directories(paths):
+                    modslots.append(subdir)
             case 'ui':
-                pass
+                continue
+    print(modslots)
 
-    for item in modslots:
-        print(item)
 
+    for fighter in modslots:
+        fighter_path = os.path.normpath(os.path.join(current_path, fighter))
+        for dirname in os.listdir(fighter_path):
+            for subdir in os.path.join(fighter_path, dirname):
+                if os.path.isdir(os.path.join(fighter_path, dirname, subdir)):
+                    if subdir.startswith('c') and subdir[1:].isdigit():
+                        slot = int(subdir[1:])
+                        modslots[fighter].append(slot)
+                else:
+                    print(f'{subdir} is not valid.')
+
+    print(modslots)
+
+
+def get_fighter_directories(paths):
+    result = []
+    for path in paths:
+        if os.path.isdir(path):
+            for directory in os.listdir(path):
+                if os.path.isdir(directory) and directory in FIGHTER_INFO.keys():
+                    result.append(directory)
+                else:
+                    print(f"{directory} is not valid.")
+    return result
 
 def display_help():
     print(f'    ')

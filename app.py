@@ -3,17 +3,6 @@ import shutil
 from os import scandir
 from tkinter.filedialog import askdirectory
 
-COMMANDS = {
-    'ls': 'ls',
-    'cd': 'cd',
-    'up': 'up',
-    'mkdir': 'mkdir',
-    'rmdir': 'rmdir',
-    'get_modslot': 'get modslot',
-    'help': 'help',
-    'exit': 'exit',
-}
-
 # Dictionary mapping internal names to (fighter number, character name)
 FIGHTER_INFO = {
     'mario': ('1', 'Mario'),
@@ -409,9 +398,6 @@ def get_modslots(command, current_path):
             match dirname:
                 case 'fighter':
                     pass
-
-
-
 
 def display_help():
     print(f'    ')

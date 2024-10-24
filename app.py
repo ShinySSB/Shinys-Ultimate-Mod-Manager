@@ -2,6 +2,7 @@ import os
 import shutil
 from os import scandir
 from tkinter.filedialog import askdirectory
+from enum import Enum, auto
 
 # Dictionary mapping internal names to (fighter number, character name)
 FIGHTER_INFO = {
@@ -245,6 +246,84 @@ STAGE_INFO = {
     'zelda_train': 'Spirit Train',
 }
 
+
+class Character:
+    def __init__(self, name: str):
+        internal_name = name
+
+
+class Series(Enum):
+    SMASH = auto()
+    MARIO = auto()
+    MARIO_KART = auto()
+    DONKEY_KONG = auto()
+    ZELDA = auto()
+    METROID = auto()
+    YOSHI = auto()
+    KIRBY = auto()
+    STAR_FOX = auto()
+    POKEMON = auto()
+    F_ZERO = auto()
+    ICE_CLIMBER = auto()
+    MOTHER = auto()
+    FIRE_EMBLEM = auto()
+    GAME_AND_WATCH = auto()
+    KID_ICARUS = auto()
+    WARIO = auto()
+    PIKMIN = auto()
+    FAMICOM = auto()
+    ANIMAL_CROSSING = auto()
+    WII_FIT = auto()
+    PUNCH_OUT = auto()
+    XENOBLADE_CHRONICLES = auto()
+    DUCK_HUNT = auto()
+    SPLATOON = auto()
+    METAL_GEAR = auto()
+    SONIC = auto()
+    MEGA_MAN = auto()
+    PACMAN = auto()
+    STREET_FIGHTER = auto()
+    FINAL_FANTASY = auto()
+    BAYONETTA = auto()
+    CASTLEVANIA = auto()
+    PERSONA = auto()
+    DRAGON_QUEST = auto()
+    BANJO_KAZOOIE = auto()
+    FATAL_FURY = auto()
+    ARMS = auto()
+    MINECRAFT = auto()
+    TEKKEN = auto()
+    KINGDOM_HEARTS = auto()
+    OTHER = auto()
+    NONE = auto()
+
+
+class Fighter(Character):
+    def __init__(self, name: str, fighter_number: int, echo: bool, series: Series):
+        super().__init__(name)
+        self.fighter_number = fighter_number
+        self.echo = echo
+        self.series = series
+
+
+class Mod:
+    instances = []
+    def __init__(self, name: str):
+        self.name = name
+
+
+class FighterMod(Mod):
+    def __init__(self, name: str, fighter: Fighter, slot: str):
+        super().__init__(name)
+        self.fighter = fighter
+        self.slot = slot
+
+
+class StageMod(Mod):
+    def __init__(self, name: str, series: Series):
+        super().__init__(name)
+        self.series = series
+
 def main():
 
     switch_sd = ask_user_for_path('Please input the root of your SD card.')
@@ -267,7 +346,7 @@ def ask_user_for_path(prompt):
         print("Selected directory: " + result)
         mods_folder = os.path.normpath(os.path.join(result, 'ultimate', 'mods'))
         if not os.path.exists(result) or not os.path.isdir(result):
-            print("Not a valid directory. Please try again")
+            print("Not a valid directory. Please try again.")
         elif not os.path.isdir(mods_folder):
             print('Cannot find mods folder in directory. Make sure you select the root of your SD card. '
               r'If you have no mods folder on your SD card, create SD:\ultimate\mods\'')
@@ -329,7 +408,7 @@ def run_file_manager(mod_tree, current_path):
             case 'rmdir':
                 remove_directory(command, current_path)
 
-            case 'get_modslot': #WIP
+            case 'get_modslots': #WIP
                 get_modslots(command, current_path)
 
             case 'help':
@@ -392,9 +471,9 @@ def remove_directory(command, current_path):
         print("Usage: rmdir <path>")
 
 def get_modslots(command, current_path):
-    modslots = []
     paths = []
     folders = []
+    slots = []
     for dirname in os.listdir(current_path):
         folders.append(dirname)
         paths.append(os.path.join(current_path, dirname))
@@ -402,11 +481,11 @@ def get_modslots(command, current_path):
     for folder in folders:
         match folder:
             case 'fighter':
+                fighter = FighterMod
                 for subdir in get_fighter_directories(paths):
-                    modslots.append(subdir)
+
             case 'ui':
                 continue
-    print(modslots)
 
 
     for fighter in modslots:
@@ -420,7 +499,6 @@ def get_modslots(command, current_path):
                 else:
                     print(f'{subdir} is not valid.')
 
-    print(modslots)
 
 
 def get_fighter_directories(paths):

@@ -4,254 +4,6 @@ from os import scandir
 from tkinter.filedialog import askdirectory
 from enum import Enum, auto
 
-# Dictionary mapping internal names to (fighter number, character name)
-FIGHTER_INFO = {
-    'mario': ('1', 'Mario'),
-    'donkey': ('2', 'Donkey Kong'),
-    'link': ('3', 'Link'),
-    'samus': ('4', 'Samus'),
-    'samusd': ('4E', 'Dark Samus'),
-    'yoshi': ('5', 'Yoshi'),
-    'kirby': ('6', 'Kirby'),
-    'fox': ('7', 'Fox'),
-    'pikachu': ('8', 'Pikachu'),
-    'luigi': ('9', 'Luigi'),
-    'ness': ('10', 'Ness'),
-    'captain': ('11', 'Captain Falcon'),
-    'purin': ('12', 'Jigglypuff'),
-    'peach': ('13', 'Peach'),
-    'daisy': ('13E', 'Daisy'),
-    'koopa': ('14', 'Bowser'),
-    'koopag': ('14B', 'Giga Bowser'),
-    'nana': ('15', 'Ice Climbers (Nana)'),
-    'popo': ('15', 'Ice Climbers (Popo)'),
-    'sheik': ('16', 'Sheik'),
-    'zelda': ('17', 'Zelda'),
-    'mariod': ('18', 'Dr. Mario'),
-    'pichu': ('19', 'Pichu'),
-    'falco': ('20', 'Falco'),
-    'marth': ('21', 'Marth'),
-    'lucina': ('21E', 'Lucina'),
-    'younglink': ('22', 'Young Link'),
-    'ganon': ('23', 'Ganondorf'),
-    'mewtwo': ('24', 'Mewtwo'),
-    'roy': ('25', 'Roy'),
-    'chrom': ('25E', 'Chrom'),
-    'gamewatch': ('26', 'Mr. Game & Watch'),
-    'metaknight': ('27', 'Meta Knight'),
-    'pit': ('28', 'Pit'),
-    'pitb': ('28E', 'Dark Pit'),
-    'szerosuit': ('29', 'Zero Suit Samus'),
-    'wario': ('30', 'Wario'),
-    'snake': ('31', 'Snake'),
-    'ike': ('32', 'Ike'),
-    'ptrainer': ('33T', 'Pokémon Trainer'),
-    'ptrainer_low': ('33T', 'Pokémon Trainer (Low)'),
-    'pzenigame': ('33', 'Squirtle'),
-    'pfushigisou': ('34', 'Ivysaur'),
-    'plizardon': ('35', 'Charizard'),
-    'diddy': ('36', 'Diddy Kong'),
-    'lucas': ('37', 'Lucas'),
-    'sonic': ('38', 'Sonic'),
-    'dedede': ('39', 'King Dedede'),
-    'pikmin': ('40', 'Olimar'),
-    'lucario': ('41', 'Lucario'),
-    'robot': ('42', 'R.O.B.'),
-    'toonlink': ('43', 'Toon Link'),
-    'wolf': ('44', 'Wolf'),
-    'murabito': ('45', 'Villager'),
-    'rockman': ('46', 'Mega Man'),
-    'wiifit': ('47', 'Wii Fit Trainer'),
-    'rosetta': ('48', 'Rosalina & Luma'),
-    'littlemac': ('49', 'Little Mac'),
-    'gekkouga': ('50', 'Greninja'),
-    'miifighter': ('51', 'Mii Brawler'),
-    'miiswordsman': ('52', 'Mii Swordfighter'),
-    'miigunner': ('53', 'Mii Gunner'),
-    'palutena': ('54', 'Palutena'),
-    'pacman': ('55', 'Pac-Man'),
-    'reflet': ('56', 'Robin'),
-    'shulk': ('57', 'Shulk'),
-    'koopajr': ('58', 'Bowser Jr.'),
-    'duckhunt': ('59', 'Duck Hunt'),
-    'ryu': ('60', 'Ryu'),
-    'ken': ('60E', 'Ken'),
-    'cloud': ('61', 'Cloud'),
-    'kamui': ('62', 'Corrin'),
-    'bayonetta': ('63', 'Bayonetta'),
-    'inkling': ('64', 'Inkling'),
-    'ridley': ('65', 'Ridley'),
-    'simon': ('66', 'Simon'),
-    'richter': ('66E', 'Richter'),
-    'krool': ('67', 'King K. Rool'),
-    'shizue': ('68', 'Isabelle'),
-    'gaogaen': ('69', 'Incineroar'),
-    'packun': ('70', 'Piranha Plant'),
-    'jack': ('71', 'Joker'),
-    'brave': ('72', 'Hero'),
-    'buddy': ('73', 'Banjo & Kazooie'),
-    'dolly': ('74', 'Terry'),
-    'master': ('75', 'Byleth'),
-    'tantan': ('76', 'Min Min'),
-    'pickel': ('77', 'Steve'),
-    'edge': ('78', 'Sephiroth'),
-    'eflame': ('79', 'Pyra'),
-    'element': ('79B', 'Rex'),
-    'elight': ('80', 'Mythra'),
-    'demon': ('81', 'Kazuya'),
-    'trail': ('82', 'Sora'),
-    #'common': '',
-    #'miienemyf': '',
-    #'miienemyg': '',
-    #'miienemys': '',
-}
-
-STAGE_INFO = {
-    '75m': '75 m',
-    'animal_city': 'Town and City',
-    'animal_island': 'Tortimer Island',
-    'animal_village': 'Smashville',
-    'balloonfight': 'Balloon Fight',
-    'battlefield': 'Battlefield',
-    'battlefield_l': 'Big Battlefield',
-    'battlefield_s': 'Small Battlefield',
-    'bayo_clock': 'Umbra Clock Tower',
-    #'bonusgame': '',
-    'bossstage_dracula': "Dracula's Boss Stage",
-    #'bossstage_final1': '',
-    #'bossstage_final2': '',
-    #'bossstage_final3': '',
-    'bossstage_galleom': "Galleom's Boss Stage",
-    'bossstage_ganonboss': "Ganon's Boss Stage",
-    'bossstage_marx': "Marx's Boss Stage",
-    'bossstage_rathalos': "Rathalos' Boss Stage",
-    'brave_altar': "Yggdrasil's altar",
-    'buddy_spiral': 'Spiral Mountain',
-    'campaignmap': 'The Map of World of Light',
-    #'common': '',
-    'demon_dojo': 'Mishima Dojo',
-    'dk_jungle': 'Kongo Jungle',
-    'dk_lodge': 'Jungle Japes',
-    'dk_waterfall': 'Kongo Falls',
-    'dolly_stadium': 'King of Fighters Stadium',
-    'dracula_castle': "Dracula's Castle",
-    'duckhunt': 'Duck Hunt',
-    'end': 'Final Destination',
-    'fe_arena': 'Arena Ferox',
-    'fe_colloseum': 'Coliseum',
-    'fe_shrine': 'Garreg Mach Monastery',
-    'fe_siege': 'Castle Siege',
-    'ff_cave': 'Northern Cave',
-    'ff_midgar': 'Midgar',
-    'flatzonex': 'Flat Zone X',
-    'fox_corneria': 'Corneria',
-    'fox_lylatcruise': 'Lylat Cruise',
-    'fox_venom': 'Venom',
-    'fzero_bigblue': 'Big Blue',
-    'fzero_mutecity3ds': 'Mute City SNES', #What the actual fuck nintendo
-    'fzero_porttown': 'Port Town Aero Drive',
-    'homeruncontest': 'Home-Run Contest',
-    'icarus_angeland': "Palutena's Temple",
-    'icarus_skyworld': 'Skyworld',
-    'icarus_uprising': 'Reset Bomb Forest',
-    'ice_top': 'Summit',
-    'jack_mementoes': 'Mementos',
-    'kart_circuitfor': 'Mario Circuit',
-    'kart_circuitx': 'Figure-8 Circuit',
-    'kirby_cave': 'The Great Cave Offensive',
-    'kirby_fountain': 'Fountain of Dreams',
-    'kirby_gameboy': 'Dream Land GB',
-    'kirby_greens': 'Green Greens',
-    'kirby_halberd': 'Halberd',
-    'kirby_pupupu64': 'Dream Land',
-    'luigimansion': "Luigi's Mansion",
-    'mario_3dland': '3D Land',
-    'mario_castle64': "Peach's Castle",
-    'mario_castledx': "Princess Peach's Castle",
-    'mario_dolpic': 'Delfino Plaza',
-    'mario_galaxy': 'Mario Galaxy',
-    'mario_newbros2': 'Golden Plains',
-    'mario_odyssey': 'New Donk City Hall',
-    'mario_paper': 'Paper Mario',
-    'mario_past64': 'Mushroom Kingdom',
-    'mario_pastusa': 'Mushroom Kingdom II',
-    'mario_pastx': 'Mushroomy Kingdom',
-    'mario_rainbow': 'Rainbow Cruise',
-    'mario_uworld': 'Mushroom Kingdom U',
-    'mariobros': 'Mario Bros.',
-    'metroid_kraid': 'Brinstar Depths',
-    'metroid_norfair': 'Norfair',
-    'metroid_orpheon': 'Frigate Orpheon',
-    'metroid_zebesdx': 'Brinstar',
-    'mg_shadowmoses': 'Shadow Moses Island',
-    'mother_fourside': 'Fourside',
-    'mother_magicant': 'Magicant',
-    'mother_newpork': 'New Pork City',
-    'mother_onett': 'Onett',
-    'nintendogs': 'Living Room',
-    'pac_land': 'PAC-LAND',
-    'photostage': 'Mii Photo Stage',
-    'pickel_world': 'Minecraft World',
-    'pictochat2': 'PictoChat 2',
-    'pikmin_garden': 'Garden of Hope',
-    'pikmin_planet': 'Distant Planet',
-    'pilotwings': 'Pilotwings',
-    'plankton': 'Hanenbow',
-    'poke_kalos': 'Kalos Pokémon League',
-    'poke_stadium': 'Pokémon Stadium',
-    'poke_stadium2': 'Pokémon Stadium 2',
-    'poke_tengam': 'Spear Tower',
-    'poke_tower': 'Prism Tower',
-    'poke_unova': 'Unova Pokémon League',
-    'poke_yamabuki': 'Saffron City',
-    'punchoutsb': 'Boxing Ring',
-    #'punchoutw': '',
-    'resultstage': 'Results Stage',
-    'resultstage_edge': "Sephiroth's Results Stage",
-    'resultstage_jack': "Joker's Results Stage",
-    'rock_wily': 'Wily Castle',
-    'settingstage': 'Controller Setting Stage',
-    'sf_suzaku': 'Suzaku Castle',
-    #'shamfight': '',
-    'sonic_greenhill': 'Green Hill Zone',
-    'sonic_windyhill': 'Windy Hill Zone',
-    #'sp_edit': '',
-    #'spiritsroulette': '',
-    'spla_parking': 'Moray Towers',
-    #'staffroll': '',
-    'streetpass': 'Find Mii',
-    'tantan_spring': 'Spring Stadium',
-    'tomodachi': 'Tomodachi Life',
-    'trail_castle': 'Hollow Bastion',
-    'training': 'Training Mode Stage',
-    'wario_gamer': 'Gamer',
-    'wario_madein': 'WarioWare, Inc.',
-    'wiifit': 'Wii Fit Studio',
-    'wreckingcrew': 'Wrecking Crew',
-    'wufuisland': 'Wuhu Island',
-    'xeno_alst': 'Cloud Sea of Alrest',
-    'xeno_gaur': 'Gaur Plain',
-    'yoshi_cartboard': "Yoshi's Story",
-    'yoshi_island': "Yoshi's Island",
-    'yoshi_story': 'Super Happy Tree',
-    'yoshi_yoster': "Yoshi's Island (Melee)",
-    'zelda_gerudo': 'Gerudo Valley',
-    'zelda_greatbay': 'Great Bay',
-    'zelda_hyrule': "Hyrule Castle",
-    'zelda_oldin': "Bridge of Eldin",
-    'zelda_pirates': 'Pirate Ship',
-    'zelda_skyward': 'Skyloft',
-    'zelda_temple': 'Temple',
-    'zelda_tower': 'Great Plateau Tower',
-    'zelda_train': 'Spirit Train',
-}
-
-
-class Character:
-    def __init__(self, name: str):
-        internal_name = name
-
-
 class Series(Enum):
     SMASH = auto()
     MARIO = auto()
@@ -272,6 +24,16 @@ class Series(Enum):
     WARIO = auto()
     PIKMIN = auto()
     FAMICOM = auto()
+    ELECTROPLANKTON = auto()
+    BALLOON_FIGHT = auto()
+    NINTENDOGS = auto()
+    MII = auto()
+    MII_PLAZA = auto()
+    TOMODACHI = auto()
+    WUHU_ISLAND = auto()
+    PILOTWINGS = auto()
+    PICTOCHAT = auto()
+    WRECKING_CREW = auto()
     ANIMAL_CROSSING = auto()
     WII_FIT = auto()
     PUNCH_OUT = auto()
@@ -297,14 +59,258 @@ class Series(Enum):
     OTHER = auto()
     NONE = auto()
 
+# Dictionary mapping internal names to (fighter number, character name, series)
+FIGHTER_INFO = {
+    'mario': ('1', 'Mario', Series.MARIO),
+    'donkey': ('2', 'Donkey Kong', Series.DONKEY_KONG),
+    'link': ('3', 'Link', Series.ZELDA),
+    'samus': ('4', 'Samus', Series.METROID),
+    'samusd': ('4E', 'Dark Samus', Series.METROID),
+    'yoshi': ('5', 'Yoshi', Series.YOSHI),
+    'kirby': ('6', 'Kirby', Series.KIRBY),
+    'fox': ('7', 'Fox', Series.STAR_FOX),
+    'pikachu': ('8', 'Pikachu', Series.POKEMON),
+    'luigi': ('9', 'Luigi', Series.MARIO),
+    'ness': ('10', 'Ness', Series.MOTHER),
+    'captain': ('11', 'Captain Falcon', Series.F_ZERO),
+    'purin': ('12', 'Jigglypuff', Series.POKEMON),
+    'peach': ('13', 'Peach', Series.MARIO),
+    'daisy': ('13E', 'Daisy', Series.MARIO),
+    'koopa': ('14', 'Bowser', Series.MARIO),
+    'koopag': ('14B', 'Giga Bowser', Series.MARIO),
+    'nana': ('15', 'Ice Climbers (Nana)', Series.ICE_CLIMBER),
+    'popo': ('15', 'Ice Climbers (Popo)', Series.ICE_CLIMBER),
+    'sheik': ('16', 'Sheik', Series.ZELDA),
+    'zelda': ('17', 'Zelda', Series.ZELDA),
+    'mariod': ('18', 'Dr. Mario', Series.MARIO),
+    'pichu': ('19', 'Pichu', Series.POKEMON),
+    'falco': ('20', 'Falco', Series.STAR_FOX),
+    'marth': ('21', 'Marth', Series.FIRE_EMBLEM),
+    'lucina': ('21E', 'Lucina', Series.FIRE_EMBLEM),
+    'younglink': ('22', 'Young Link', Series.ZELDA),
+    'ganon': ('23', 'Ganondorf', Series.ZELDA),
+    'mewtwo': ('24', 'Mewtwo', Series.POKEMON),
+    'roy': ('25', 'Roy', Series.FIRE_EMBLEM),
+    'chrom': ('25E', 'Chrom', Series.FIRE_EMBLEM),
+    'gamewatch': ('26', 'Mr. Game & Watch', Series.GAME_AND_WATCH),
+    'metaknight': ('27', 'Meta Knight', Series.KIRBY),
+    'pit': ('28', 'Pit', Series.KID_ICARUS),
+    'pitb': ('28E', 'Dark Pit', Series.KID_ICARUS),
+    'szerosuit': ('29', 'Zero Suit Samus', Series.METROID),
+    'wario': ('30', 'Wario', Series.WARIO),
+    'snake': ('31', 'Snake', Series.METAL_GEAR),
+    'ike': ('32', 'Ike', Series.FIRE_EMBLEM),
+    'ptrainer': ('33T', 'Pokémon Trainer', Series.POKEMON),
+    'ptrainer_low': ('33T', 'Pokémon Trainer (Low)', Series.POKEMON),
+    'pzenigame': ('33', 'Squirtle', Series.POKEMON),
+    'pfushigisou': ('34', 'Ivysaur', Series.POKEMON),
+    'plizardon': ('35', 'Charizard', Series.POKEMON),
+    'diddy': ('36', 'Diddy Kong', Series.DONKEY_KONG),
+    'lucas': ('37', 'Lucas', Series.MOTHER),
+    'sonic': ('38', 'Sonic', Series.SONIC),
+    'dedede': ('39', 'King Dedede', Series.KIRBY),
+    'pikmin': ('40', 'Olimar', Series.PIKMIN),
+    'lucario': ('41', 'Lucario', Series.POKEMON),
+    'robot': ('42', 'R.O.B.', Series.FAMICOM),
+    'toonlink': ('43', 'Toon Link', Series.ZELDA),
+    'wolf': ('44', 'Wolf', Series.STAR_FOX),
+    'murabito': ('45', 'Villager', Series.ANIMAL_CROSSING),
+    'rockman': ('46', 'Mega Man', Series.MEGA_MAN),
+    'wiifit': ('47', 'Wii Fit Trainer', Series.WII_FIT),
+    'rosetta': ('48', 'Rosalina & Luma', Series.MARIO),
+    'littlemac': ('49', 'Little Mac', Series.PUNCH_OUT),
+    'gekkouga': ('50', 'Greninja', Series.POKEMON),
+    'miifighter': ('51', 'Mii Brawler', Series.SMASH),
+    'miiswordsman': ('52', 'Mii Swordfighter', Series.SMASH),
+    'miigunner': ('53', 'Mii Gunner', Series.SMASH),
+    'palutena': ('54', 'Palutena', Series.KID_ICARUS),
+    'pacman': ('55', 'Pac-Man', Series.PACMAN),
+    'reflet': ('56', 'Robin', Series.FIRE_EMBLEM),
+    'shulk': ('57', 'Shulk', Series.XENOBLADE_CHRONICLES),
+    'koopajr': ('58', 'Bowser Jr.', Series.MARIO),
+    'duckhunt': ('59', 'Duck Hunt', Series.DUCK_HUNT),
+    'ryu': ('60', 'Ryu', Series.STREET_FIGHTER),
+    'ken': ('60E', 'Ken', Series.STREET_FIGHTER),
+    'cloud': ('61', 'Cloud', Series.FINAL_FANTASY),
+    'kamui': ('62', 'Corrin', Series.FIRE_EMBLEM),
+    'bayonetta': ('63', 'Bayonetta', Series.BAYONETTA),
+    'inkling': ('64', 'Inkling', Series.SPLATOON),
+    'ridley': ('65', 'Ridley', Series.METROID),
+    'simon': ('66', 'Simon', Series.CASTLEVANIA),
+    'richter': ('66E', 'Richter', Series.CASTLEVANIA),
+    'krool': ('67', 'King K. Rool', Series.DONKEY_KONG),
+    'shizue': ('68', 'Isabelle', Series.ANIMAL_CROSSING),
+    'gaogaen': ('69', 'Incineroar', Series.POKEMON),
+    'packun': ('70', 'Piranha Plant', Series.MARIO),
+    'jack': ('71', 'Joker', Series.PERSONA),
+    'brave': ('72', 'Hero', Series.DRAGON_QUEST),
+    'buddy': ('73', 'Banjo & Kazooie', Series.BANJO_KAZOOIE),
+    'dolly': ('74', 'Terry', Series.FATAL_FURY),
+    'master': ('75', 'Byleth', Series.FIRE_EMBLEM),
+    'tantan': ('76', 'Min Min', Series.ARMS),
+    'pickel': ('77', 'Steve', Series.MINECRAFT),
+    'edge': ('78', 'Sephiroth', Series.FINAL_FANTASY),
+    'eflame': ('79', 'Pyra', Series.XENOBLADE_CHRONICLES),
+    'element': ('79B', 'Rex', Series.XENOBLADE_CHRONICLES),
+    'elight': ('80', 'Mythra', Series.XENOBLADE_CHRONICLES),
+    'demon': ('81', 'Kazuya', Series.TEKKEN),
+    'trail': ('82', 'Sora', Series.KINGDOM_HEARTS),
+    #'common': '',
+    #'miienemyf': '',
+    #'miienemyg': '',
+    #'miienemys': '',
+}
+
+STAGE_INFO = {
+    '75m': ('75 m', Series.DONKEY_KONG),
+    'animal_city': ('Town and City', Series.ANIMAL_CROSSING),
+    'animal_island': ('Tortimer Island', Series.ANIMAL_CROSSING),
+    'animal_village': ('Smashville', Series.ANIMAL_CROSSING),
+    'balloonfight': ('Balloon Fight', Series.BALLOON_FIGHT),
+    'battlefield': ('Battlefield', Series.SMASH),
+    'battlefield_l': ('Big Battlefield', Series.SMASH),
+    'battlefield_s': ('Small Battlefield', Series.SMASH),
+    'bayo_clock': ('Umbra Clock Tower', Series.BAYONETTA),
+    #'bonusgame': '',
+    'bossstage_dracula': ("Dracula's Boss Stage", Series.CASTLEVANIA),
+    #'bossstage_final1': '',
+    #'bossstage_final2': '',
+    #'bossstage_final3': '',
+    'bossstage_galleom': ("Galleom's Boss Stage", Series.SMASH),
+    'bossstage_ganonboss': ("Ganon's Boss Stage", Series.ZELDA),
+    'bossstage_marx': ("Marx's Boss Stage", Series.KIRBY),
+    'bossstage_rathalos': ("Rathalos' Boss Stage", Series.OTHER),
+    'brave_altar': ("Yggdrasil's Altar", Series.DRAGON_QUEST),
+    'buddy_spiral': ('Spiral Mountain', Series.BANJO_KAZOOIE),
+    #'campaignmap': ('The Map of World of Light', Series.SMASH),
+    #'common': '',
+    'demon_dojo': ('Mishima Dojo', Series.TEKKEN),
+    'dk_jungle': ('Kongo Jungle', Series.DONKEY_KONG),
+    'dk_lodge': ('Jungle Japes', Series.DONKEY_KONG),
+    'dk_waterfall': ('Kongo Falls', Series.DONKEY_KONG),
+    'dolly_stadium': ('King of Fighters Stadium', Series.FATAL_FURY),
+    'dracula_castle': ("Dracula's Castle", Series.CASTLEVANIA),
+    'duckhunt': ('Duck Hunt', Series.DUCK_HUNT),
+    'end': ('Final Destination', Series.SMASH),
+    'fe_arena': ('Arena Ferox', Series.FIRE_EMBLEM),
+    'fe_colloseum': ('Coliseum', Series.FIRE_EMBLEM),
+    'fe_shrine': ('Garreg Mach Monastery', Series.FIRE_EMBLEM),
+    'fe_siege': ('Castle Siege', Series.FIRE_EMBLEM),
+    'ff_cave': ('Northern Cave', Series.FINAL_FANTASY),
+    'ff_midgar': ('Midgar', Series.FINAL_FANTASY),
+    'flatzonex': ('Flat Zone X', Series.GAME_AND_WATCH),
+    'fox_corneria': ('Corneria', Series.STAR_FOX),
+    'fox_lylatcruise': ('Lylat Cruise', Series.STAR_FOX),
+    'fox_venom': ('Venom', Series.STAR_FOX),
+    'fzero_bigblue': ('Big Blue', Series.F_ZERO),
+    'fzero_mutecity3ds': ('Mute City SNES', Series.F_ZERO),
+    'fzero_porttown': ('Port Town Aero Drive', Series.F_ZERO),
+    'homeruncontest': ('Home-Run Contest', Series.SMASH),
+    'icarus_angeland': ("Palutena's Temple", Series.KID_ICARUS),
+    'icarus_skyworld': ('Skyworld', Series.KID_ICARUS),
+    'icarus_uprising': ('Reset Bomb Forest', Series.KID_ICARUS),
+    'ice_top': ('Summit', Series.ICE_CLIMBER),
+    'jack_mementoes': ('Mementos', Series.PERSONA),
+    'kart_circuitfor': ('Mario Circuit', Series.MARIO_KART),
+    'kart_circuitx': ('Figure-8 Circuit', Series.MARIO_KART),
+    'kirby_cave': ('The Great Cave Offensive', Series.KIRBY),
+    'kirby_fountain': ('Fountain of Dreams', Series.KIRBY),
+    'kirby_gameboy': ('Dream Land GB', Series.KIRBY),
+    'kirby_greens': ('Green Greens', Series.KIRBY),
+    'kirby_halberd': ('Halberd', Series.KIRBY),
+    'kirby_pupupu64': ('Dream Land', Series.KIRBY),
+    'luigimansion': ("Luigi's Mansion", Series.MARIO),
+    'mario_3dland': ('3D Land', Series.MARIO),
+    'mario_castle64': ("Peach's Castle", Series.MARIO),
+    'mario_castledx': ("Princess Peach's Castle", Series.MARIO),
+    'mario_dolpic': ('Delfino Plaza', Series.MARIO),
+    'mario_galaxy': ('Mario Galaxy', Series.MARIO),
+    'mario_newbros2': ('Golden Plains', Series.MARIO),
+    'mario_odyssey': ('New Donk City Hall', Series.MARIO),
+    'mario_paper': ('Paper Mario', Series.MARIO),
+    'mario_past64': ('Mushroom Kingdom', Series.MARIO),
+    'mario_pastusa': ('Mushroom Kingdom II', Series.MARIO),
+    'mario_pastx': ('Mushroomy Kingdom', Series.MARIO),
+    'mario_rainbow': ('Rainbow Cruise', Series.MARIO),
+    'mario_uworld': ('Mushroom Kingdom U', Series.MARIO),
+    'mariobros': ('Mario Bros.', Series.MARIO),
+    'metroid_kraid': ('Brinstar Depths', Series.METROID),
+    'metroid_norfair': ('Norfair', Series.METROID),
+    'metroid_orpheon': ('Frigate Orpheon', Series.METROID),
+    'metroid_zebesdx': ('Brinstar', Series.METROID),
+    'mg_shadowmoses': ('Shadow Moses Island', Series.METAL_GEAR),
+    'mother_fourside': ('Fourside', Series.MOTHER),
+    'mother_magicant': ('Magicant', Series.MOTHER),
+    'mother_newpork': ('New Pork City', Series.MOTHER),
+    'mother_onett': ('Onett', Series.MOTHER),
+    'nintendogs': ('Living Room', Series.NINTENDOGS),
+    'pac_land': ('PAC-LAND', Series.PACMAN),
+    'photostage': ('Mii Photo Stage', Series.OTHER),
+    'pickel_world': ('Minecraft World', Series.MINECRAFT),
+    'pictochat2': ('PictoChat 2', Series.PICTOCHAT),
+    'pikmin_garden': ('Garden of Hope', Series.PIKMIN),
+    'pikmin_planet': ('Distant Planet', Series.PIKMIN),
+    'pilotwings': ('Pilotwings', Series.PILOTWINGS),
+    'plankton': ('Hanenbow', Series.ELECTROPLANKTON),
+    'poke_kalos': ('Kalos Pokémon League', Series.POKEMON),
+    'poke_stadium': ('Pokémon Stadium', Series.POKEMON),
+    'poke_stadium2': ('Pokémon Stadium 2', Series.POKEMON),
+    'poke_tengam': ('Spear Tower', Series.POKEMON),
+    'poke_tower': ('Prism Tower', Series.POKEMON),
+    'poke_unova': ('Unova Pokémon League', Series.POKEMON),
+    'poke_yamabuki': ('Saffron City', Series.POKEMON),
+    'punchoutsb': ('Boxing Ring', Series.PUNCH_OUT),
+    #'punchoutw': '',
+    'resultstage': ('Results Stage', Series.SMASH),
+    'resultstage_edge': ("Sephiroth's Results Stage", Series.FINAL_FANTASY),
+    'resultstage_jack': ("Joker's Results Stage", Series.PERSONA),
+    'rock_wily': ('Wily Castle', Series.MEGA_MAN),
+    'settingstage': ('Controller Setting Stage', Series.SMASH),
+    'sf_suzaku': ('Suzaku Castle', Series.STREET_FIGHTER),
+    #'shamfight': '',
+    'sonic_greenhill': ('Green Hill Zone', Series.SONIC),
+    'sonic_windyhill': ('Windy Hill Zone', Series.SONIC),
+    #'sp_edit': '',
+    #'spiritsroulette': '',
+    'spla_parking': ('Moray Towers', Series.SPLATOON),
+    #'staffroll': '',
+    'streetpass': ('Find Mii', Series.MII_PLAZA),
+    'tantan_spring': ('Spring Stadium', Series.ARMS),
+    'tomodachi': ('Tomodachi Life', Series.OTHER),
+    'trail_castle': ('Hollow Bastion', Series.KINGDOM_HEARTS),
+    'training': ('Training Mode Stage', Series.SMASH),
+    'wario_gamer': ('Gamer', Series.WARIO),
+    'wario_madein': ('WarioWare, Inc.', Series.WARIO),
+    'wiifit': ('Wii Fit Studio', Series.WII_FIT),
+    'wreckingcrew': ('Wrecking Crew', Series.OTHER),
+    'wufuisland': ('Wuhu Island', Series.WUHU_ISLAND),
+    'xeno_alst': ('Cloud Sea of Alrest', Series.XENOBLADE_CHRONICLES),
+    'xeno_gaur': ('Gaur Plain', Series.XENOBLADE_CHRONICLES),
+    'yoshi_cartboard': ("Yoshi's Story", Series.YOSHI),
+    'yoshi_island': ("Yoshi's Island", Series.YOSHI),
+    'yoshi_story': ('Super Happy Tree', Series.YOSHI),
+    'yoshi_yoster': ("Yoshi's Island (Melee)", Series.YOSHI),
+    'zelda_gerudo': ('Gerudo Valley', Series.ZELDA),
+    'zelda_greatbay': ('Great Bay', Series.ZELDA),
+    'zelda_hyrule': ("Hyrule Castle", Series.ZELDA),
+    'zelda_oldin': ('Bridge of Eldin', Series.ZELDA),
+    'zelda_pirates': ('Pirate Ship', Series.ZELDA),
+    'zelda_skyward': ('Skyloft', Series.ZELDA),
+    'zelda_temple': ('Temple', Series.ZELDA),
+    'zelda_tower': ('Great Plateau Tower', Series.ZELDA),
+    'zelda_train': ('Spirit Train', Series.ZELDA),
+}
+
+
+class Character:
+    def __init__(self, name: str):
+        self.name = name
 
 class Fighter(Character):
-    def __init__(self, name: str, fighter_number: int, echo: bool, series: Series):
-        super().__init__(name)
+    def __init__(self, fighter_number: int, name: str, series: Series):
         self.fighter_number = fighter_number
-        self.echo = echo
+        super().__init__(name)
         self.series = series
-
 
 class Mod:
     instances = []
@@ -409,7 +415,7 @@ def run_file_manager(mod_tree, current_path):
                 remove_directory(command, current_path)
 
             case 'get_modslots': #WIP
-                get_modslots(command, current_path)
+                slots = get_modslots(command, os.path.normpath(current_path))
 
             case 'help':
                 display_help()
@@ -471,34 +477,51 @@ def remove_directory(command, current_path):
         print("Usage: rmdir <path>")
 
 def get_modslots(command, current_path):
-    paths = []
-    folders = []
-    slots = []
+    folders = [] #stores the folder names for the match case further down
+    slots = [] #what we'll return at the end
+    fighter_slot = []
     for dirname in os.listdir(current_path):
-        folders.append(dirname)
-        paths.append(os.path.join(current_path, dirname))
+        if os.path.isdir(os.path.join(current_path, dirname)):
+            folders.append(dirname)
 
-    for folder in folders:
-        match folder:
-            case 'fighter':
-                fighter = FighterMod
-                for subdir in get_fighter_directories(paths):
+    for d1 in folders:
+        for d2 in os.listdir(os.path.join(current_path, d1)):
+            match d2:
+                case 'fighter': #if the first subdirectory is called fighter
+                    for d3 in os.listdir(os.path.join(current_path, d1, d2)):
+                        if d3 in FIGHTER_INFO.keys() and os.path.isdir(os.path.join(current_path, d1, d2, d3)): #if the subdirectory of fighter exists in the keys of FIGHTER_INFO
+                            fighter_info = FIGHTER_INFO[d3] #store the data about the fighter from the dictionary
+                            for d4 in os.listdir(os.path.join(current_path, d1, d2, d3)):
+                                for d5 in os.listdir(os.path.join(current_path, d1, d2, d3, d4)): #ignore the names of these 2 subdirectories
+                                    for d6 in os.listdir(os.path.join(current_path, d1, d2, d3, d4, d5)):
+                                        if d6.startswith('c') and os.path.isdir(os.path.join(current_path, d1, d2, d3, d4, d5, d6)) and d6[1:].isdigit():
+                                            fighter = Fighter(*fighter_info)
+                                            fighter_mod = FighterMod(d1, fighter, d6)
+                                            if not check_for_duplicates(fighter_mod, fighter_slot): #if the current mod doesn't have any duplicates
+                                                fighter_slot.append(fighter_mod) #make a new FighterMod object for each skin slot it finds
+                    slots += fighter_slot
+                    fighter_slot.clear()
+                case 'ui':
+                    continue
 
-            case 'ui':
-                continue
+    for slot in slots:
+        print(f'''
+    Mod name: {slot.name}
+    Character: {slot.fighter.name}
+    Fighter number: {slot.fighter.fighter_number}
+    Skin slot: {slot.slot}
+    Series: {str(slot.fighter.series).split('.')[-1].title()}
+        ''')
+    print(slots)
+    return slots
 
-
-    for fighter in modslots:
-        fighter_path = os.path.normpath(os.path.join(current_path, fighter))
-        for dirname in os.listdir(fighter_path):
-            for subdir in os.path.join(fighter_path, dirname):
-                if os.path.isdir(os.path.join(fighter_path, dirname, subdir)):
-                    if subdir.startswith('c') and subdir[1:].isdigit():
-                        slot = int(subdir[1:])
-                        modslots[fighter].append(slot)
-                else:
-                    print(f'{subdir} is not valid.')
-
+def check_for_duplicates(new: FighterMod, array: list[FighterMod]) -> bool:
+    for i in array:
+        if new.fighter.name == i.fighter.name and new.slot == i.slot:
+            return True
+        else:
+            continue
+    return False
 
 
 def get_fighter_directories(paths):

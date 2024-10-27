@@ -1,5 +1,6 @@
 import os
 import shutil
+from heapq import merge
 from os import scandir
 from tkinter.filedialog import askdirectory
 import data.internal_names_and_series as info
@@ -133,7 +134,7 @@ def run_file_manager(mod_tree, current_path):
                 Fighter number: {slot.fighter.fighter_number}
                 Skin slot: {slot.slot}
                 Series: {str(slot.fighter.series).split('.')[-1].title()}
-                Mod type: {slot.mod_type}
+                Mod types: {", ".join(slot.mod_type)}
                     ''')
                 print(slots)
 
@@ -249,43 +250,59 @@ def get_modslots(current_path, command):
                                                                 file_string = file_string.split('.')
                                                                 for f in file_string:
                                                                     if f.isdigit() and len(f) == 2:
-                                                                        skin = f
+                                                                        skin = 'c' + f
+                                                    else:
+                                                        print(f"d6 {d6} is not a file or does not start with 'chara'.")
+                                            else:
+                                                print(f"d5 {d5} does not start with 'chara'.")
+                                    else:
+                                        print(f"d4 {d4} is not named 'chara'.")
+                            else:
+                                print(f"d3 {d3} does not start with 'replace'.")
                         if character == '' or skin == '':
                             print(f'Error! UI mod: <{d1}> does not exist. Please check inside ui folder.')
                         else:
                             ui_mod = FighterMod(d1, character, skin, ['ui'])
                             fighter_slot.append(ui_mod)
                             if not check_for_duplicates(ui_mod, fighter_slot):
+                                print(f'{d1} added.')
                                 fighter_slot.append(ui_mod)
                                 slots += fighter_slot
                                 fighter_slot.clear()
 
+
+    slots = merge_duplicates(slots)
+
     return slots
 
 def check_for_duplicates(new: FighterMod, array: list[FighterMod]) -> bool:
-    mod_types = []
     for i in array:
         if new.name == i.name and new.fighter.name == i.fighter.name and new.slot == i.slot and new.mod_type == i.mod_type:
             return True
-        elif new.mod_type != i.mod_type:
-            mod_types += new.mod_type
-            mod_types += i.mod_type
-            mod_types = list(dict.fromkeys(mod_types))
-            continue
         else:
             continue
     return False
 
-def merge_mod_types(slots):
-    checked_mods = []
-    for slot in slots:
-        if not checked_mods:
-            checked_mods.append(slot)
-        for mod in checked_mods:
-            if slot.mod_type != mod.mod_type and slot.name == mod.name and slot.fighter.name == mod.fighter.name and slot.slot == mod.slot:
-                mod.mod_type.append(slot.mod_type)
+def merge_duplicates(mods: list[FighterMod]) -> list[FighterMod]:
+    # Dictionary to hold unique FighterMod objects by a tuple key
+    unique_mods = {}
 
+    # Helper function to create a unique key based on FighterMod attributes
+    def mod_key(mod: FighterMod):
+        return (mod.name, mod.fighter.name, mod.slot)
 
+    # Iterate through the list of mods
+    for mod in mods:
+        key = mod_key(mod)
+        if key in unique_mods:
+            # Merge mod_types for duplicate entries
+            unique_mods[key].mod_type = list(set(unique_mods[key].mod_type + mod.mod_type))
+        else:
+            # Add new mod if no duplicate found
+            unique_mods[key] = mod
+
+    # Return the list of merged FighterMod objects
+    return list(unique_mods.values())
 
 
 def get_fighter_directories(paths):

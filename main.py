@@ -7,7 +7,7 @@ STAGE_INFO = dict(info.STAGE_INFO)
 
 def main():
 
-    switch_sd = ask_user_for_path('Please input the root of your SD card.')
+    switch_sd = ask_user_for_sd('Please input the root of your SD card.')
     mods_folder = os.path.normpath(os.path.join(switch_sd, 'ultimate', 'mods'))
 
     skyline_plugins_folder = os.path.normpath(os.path.join(
@@ -20,7 +20,7 @@ def main():
     mod_tree = build_mod_tree(mods_folder)
     run_file_manager(mod_tree, mods_folder)
 
-def ask_user_for_path(prompt):
+def ask_user_for_sd(prompt):
     while True:
         print(prompt)
         result = askdirectory()
@@ -70,7 +70,6 @@ def run_file_manager(mod_tree, current_path):
                 Series: {str(slot.fighter.series).split('.')[-1].title()}
                 Mod types: {", ".join(slot.mod_type)}
                     ''')
-                print(slots)
 
             case 'help':
                 display_help()

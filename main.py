@@ -1,5 +1,3 @@
-from tkinter.filedialog import askdirectory
-import interface
 from commands import *
 import get_modslots
 
@@ -8,34 +6,18 @@ STAGE_INFO = dict(info.STAGE_INFO)
 
 def main():
 
-    switch_sd = ask_user_for_sd('Please input the root of your SD card.')
-    mods_folder = os.path.normpath(os.path.join(switch_sd, 'ultimate', 'mods'))
+    #switch_sd = ask_user_for_sd('Please input the root of your SD card.')
+    #mods_folder = os.path.normpath(os.path.join(switch_sd, 'ultimate', 'mods'))
 
-    skyline_plugins_folder = os.path.normpath(os.path.join(
-        switch_sd, "atmosphere", "contents", "01006A800016E000", "romfs", "skyline", "plugins"
-    ))
+    #skyline_plugins_folder = os.path.normpath(os.path.join(
+    #    switch_sd, "atmosphere", "contents", "01006A800016E000", "romfs", "skyline", "plugins"
+    #))
 
-    print('Mods folder: ' + mods_folder)
-    print('Skyline plugins folder: ' + skyline_plugins_folder)
+    #print('Mods folder: ' + mods_folder)
+    #print('Skyline plugins folder: ' + skyline_plugins_folder)
 
-    mod_tree = build_mod_tree(mods_folder)
-    run_file_manager(mod_tree, mods_folder)
-
-def ask_user_for_sd(prompt):
-    while True:
-        print(prompt)
-        result = askdirectory()
-        print("Selected directory: " + result)
-        mods_folder = os.path.normpath(os.path.join(result, 'ultimate', 'mods'))
-        if not os.path.exists(result) or not os.path.isdir(result):
-            print("Not a valid directory. Please try again.")
-            notification = interface.Nofitication(interface.app)
-        elif not os.path.isdir(mods_folder):
-            print('Cannot find mods folder in directory. Make sure you select the root of your SD card. '
-              r'If you have no mods folder on your SD card, create SD:\ultimate\mods\'')
-        else:
-            return result
-
+    #mod_tree = build_mod_tree(mods_folder)
+    #run_file_manager(mod_tree, mods_folder)
 
 def run_file_manager(mod_tree, current_path):
     mods_folder = current_path

@@ -1,5 +1,5 @@
 import customtkinter as ctk
-import main
+from utils import ask_user_for_sd
 
 class ModManager(ctk.CTk):
     def __init__(self):
@@ -17,6 +17,7 @@ class ModManager(ctk.CTk):
         self.create_buttons()
         self.create_tabs()
         self.create_optionmenu()
+        self.create_notifications()
 
     def create_tabs(self):
         self.tabview = Tabview(self)
@@ -26,6 +27,9 @@ class ModManager(ctk.CTk):
 
     def create_optionmenu(self):
         self.theme_select = ThemeSelect(self)
+
+    def create_notifications(self):
+        self.notification = Notification(self, prompt="Please try again.")
 
 class SDCardButton(ctk.CTkButton):
     def __init__(self, root):
@@ -40,16 +44,22 @@ class SDCardButton(ctk.CTkButton):
         self.sd_card_button.grid(column=2, row=0, padx=25, pady=20, sticky="sew")
 
     def sd_card_button_pressed(self):
-        switch_sd = main.ask_user_for_sd('Please input the root of your SD card.')
+        pass
 
-class Nofitication(ctk.CTkToplevel):
-    def __init__(self, root):
+class Notification(ctk.CTkToplevel):
+    def __init__(self, root, prompt):
         super().__init__(root)
-        self.title("Nofitication")
+        self.prompt = prompt
+        self.title("Notification")
         self.iconbitmap(r"images\icon.ico")
         self.geometry("400x200")
         self.resizable(False, False)
-
+        self.grid_rowconfigure((0, 1), weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.label = ctk.CTkLabel(self, text=prompt, font=("Arial", 15))
+        self.label.grid(padx=5, pady=10, row=0, column=0)
+        self.button = ctk.CTkButton(self, text="Close", command=self.destroy, font=("Arial", 15))
+        self.button.grid(padx=5, pady=10, row=1, column=0)
 
 class Tabview(ctk.CTkTabview):
     def __init__(self, root):

@@ -1,8 +1,9 @@
 import customtkinter as ctk
-from utils import ask_user_for_sd
+from sys import platform
+
 
 class ModManager(ctk.CTk):
-    def __init__(self):
+    def __init__(self, ask_user_for_sd_func):
         super().__init__()
 
         self.title("Shiny's Ultimate Mod Manager")
@@ -14,27 +15,25 @@ class ModManager(ctk.CTk):
         self.grid_columnconfigure(1, weight=1, pad=0)
         self.grid_rowconfigure(0, weight=2, pad=10)
 
+        self.ask_user_for_sd_func = ask_user_for_sd_func
         self.create_buttons()
         self.create_tabs()
         self.create_optionmenu()
-        self.create_notifications()
 
     def create_tabs(self):
         self.tabview = Tabview(self)
 
     def create_buttons(self):
-        self.sd_card_button = SDCardButton(self)
+        self.sd_card_button = SDCardButton(self, self.ask_user_for_sd_func)
 
     def create_optionmenu(self):
         self.theme_select = ThemeSelect(self)
 
-    def create_notifications(self):
-        self.notification = Notification(self, prompt="Please try again.")
-
 class SDCardButton(ctk.CTkButton):
-    def __init__(self, root):
+    def __init__(self, root, ask_user_for_sd_func):
         super().__init__(root)
 
+        self.ask_user_for_sd_func = ask_user_for_sd_func
         self.sd_card_button = ctk.CTkButton(root,
             text="Select SD Card",
             command=self.sd_card_button_pressed,
@@ -44,14 +43,19 @@ class SDCardButton(ctk.CTkButton):
         self.sd_card_button.grid(column=2, row=0, padx=25, pady=20, sticky="sew")
 
     def sd_card_button_pressed(self):
-        pass
+        self.switch_sd = self.ask_user_for_sd_func("Invalid directory, please try again.",
+                                                   'Cannot find mods folder in directory. '
+                                                   'Make sure you select the root of your SD card. '
+                r'If you have no mods folder on your SD card, create SD:\ultimate\mods\'')
 
 class Notification(ctk.CTkToplevel):
     def __init__(self, root, prompt):
         super().__init__(root)
         self.prompt = prompt
         self.title("Notification")
-        self.iconbitmap(r"images\icon.ico")
+        if platform.startswith("win"):
+            # noinspection PyTypeChecker
+            self.after(200, lambda: self.iconbitmap(r"images\notif.ico"))
         self.geometry("400x200")
         self.resizable(False, False)
         self.grid_rowconfigure((0, 1), weight=1)
@@ -60,6 +64,7 @@ class Notification(ctk.CTkToplevel):
         self.label.grid(padx=5, pady=10, row=0, column=0)
         self.button = ctk.CTkButton(self, text="Close", command=self.destroy, font=("Arial", 15))
         self.button.grid(padx=5, pady=10, row=1, column=0)
+
 
 class Tabview(ctk.CTkTabview):
     def __init__(self, root):
@@ -95,6 +100,3 @@ class ThemeSelect(ctk.CTkOptionMenu):
 
     def change_theme(self, choice):
         ctk.set_appearance_mode(choice)
-
-app = ModManager()
-app.mainloop()

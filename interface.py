@@ -1,9 +1,5 @@
-from doctest import master
-
 import customtkinter as ctk
-
 import main
-
 
 class ModManager(ctk.CTk):
     def __init__(self):
@@ -12,14 +8,14 @@ class ModManager(ctk.CTk):
         self.title("Shiny's Ultimate Mod Manager")
         self.iconbitmap(r"images\icon.ico")
         self.geometry("1280x720")
-        self._set_appearance_mode("System")
+        ctk.set_appearance_mode("System")
 
         self.grid_columnconfigure(0, weight=80, pad=10)
         self.grid_columnconfigure(1, weight=1, pad=0)
         self.grid_rowconfigure(0, weight=2, pad=10)
 
-        self.create_tabs()
         self.create_buttons()
+        self.create_tabs()
         self.create_optionmenu()
 
     def create_tabs(self):
@@ -41,10 +37,19 @@ class SDCardButton(ctk.CTkButton):
             height=50,
             corner_radius=50,
             font=("Arial", 15))
-        self.sd_card_button.grid(column=2, row=0, padx=20, pady=20, sticky="se")
+        self.sd_card_button.grid(column=2, row=0, padx=25, pady=20, sticky="sew")
 
     def sd_card_button_pressed(self):
         switch_sd = main.ask_user_for_sd('Please input the root of your SD card.')
+
+class Nofitication(ctk.CTkToplevel):
+    def __init__(self, root):
+        super().__init__(root)
+        self.title("Nofitication")
+        self.iconbitmap(r"images\icon.ico")
+        self.geometry("400x200")
+        self.resizable(False, False)
+
 
 class Tabview(ctk.CTkTabview):
     def __init__(self, root):
@@ -66,20 +71,20 @@ class ThemeSelect(ctk.CTkOptionMenu):
         super().__init__(root)
 
         self.label = ctk.CTkLabel(master=root, text="Theme", font=("Arial", 12))
-        self.label.grid(row=0, column=2, padx=75, pady=0, sticky="ne")
+        self.label.grid(row=0, column=2, padx=75, pady=0, sticky="new")
         self.theme_select = ctk.CTkOptionMenu(root,
                                               font=("Arial", 15, ),
                                               dropdown_font=("Arial", 15),
                                               values=["System", "Light", "Dark"],
                                               corner_radius=70,
-                                              anchor="center",
                                               width=153,
+                                              anchor="center",
                                               command=self.change_theme,
                                               )
-        self.theme_select.grid(column=2, row=0, padx=20, pady=30, sticky="ne")
+        self.theme_select.grid(column=2, row=0, padx=25, pady=30, sticky="new")
 
     def change_theme(self, choice):
-        pass
+        ctk.set_appearance_mode(choice)
 
 app = ModManager()
 app.mainloop()

@@ -1,4 +1,5 @@
 from tkinter.filedialog import askdirectory
+import interface
 from commands import *
 import get_modslots
 
@@ -28,6 +29,7 @@ def ask_user_for_sd(prompt):
         mods_folder = os.path.normpath(os.path.join(result, 'ultimate', 'mods'))
         if not os.path.exists(result) or not os.path.isdir(result):
             print("Not a valid directory. Please try again.")
+            notification = interface.Nofitication(interface.app)
         elif not os.path.isdir(mods_folder):
             print('Cannot find mods folder in directory. Make sure you select the root of your SD card. '
               r'If you have no mods folder on your SD card, create SD:\ultimate\mods\'')
@@ -75,7 +77,7 @@ def run_file_manager(mod_tree, current_path):
                 display_help()
 
             case 'exit':
-                break
+                exit("Exiting...")
 
             case _:
                 print("Unknown command: ", cmd)

@@ -3,7 +3,7 @@ from sys import platform
 from pygame import mixer
 
 class ModManager(ctk.CTk):
-    def __init__(self, ask_user_for_sd_func):
+    def __init__(self, ask_user_for_sd_func, main):
         super().__init__()
         self.title("Shiny's Ultimate Mod Manager")
         self.iconbitmap(r"images\icon.ico")
@@ -18,6 +18,8 @@ class ModManager(ctk.CTk):
         self.create_buttons()
         self.create_tabs()
         self.create_optionmenu()
+        self.main = main
+        self.main()
 
     def create_tabs(self):
         self.tabview = Tabview(self)
@@ -40,6 +42,7 @@ class SDCardButton(ctk.CTkButton):
             corner_radius=50,
             font=("Arial", 15))
         self.sd_card_button.grid(column=2, row=0, padx=25, pady=20, sticky="sew")
+        self.switch_sd: str = ''
 
     def sd_card_button_pressed(self):
         self.switch_sd = self.ask_user_for_sd_func("Invalid directory, please try again.",
@@ -53,6 +56,7 @@ class Notification(ctk.CTkToplevel):
         self.prompt = prompt
         self.title("Notification")
         self.geometry("400x200")
+        self.iconbitmap(r"images\notif.ico")
         self.grab_set()
         mixer.init()
         self.sound = mixer.Sound("sounds/notification.wav")

@@ -7,29 +7,34 @@ import get_modslots
 FIGHTER_INFO = dict(info.FIGHTER_INFO)
 STAGE_INFO = dict(info.STAGE_INFO)
 
+
 def main():
+    while True:
+        switch_sd = app.sd_card_button.switch_sd
+        mods_folder = os.path.normpath(os.path.join(switch_sd, 'ultimate', 'mods'))
+        if not os.path.exists(mods_folder):
+            continue
 
-    switch_sd = app.sd_card_button.switch_sd
-    mods_folder = os.path.normpath(os.path.join(switch_sd, 'ultimate', 'mods'))
-    skyline_plugins_folder = os.path.normpath(os.path.join(
-        switch_sd, "atmosphere", "contents", "01006A800016E000", "romfs", "skyline", "plugins"
-    ))
+        skyline_plugins_folder = os.path.normpath(os.path.join(
+            switch_sd, "atmosphere", "contents", "01006A800016E000", "romfs", "skyline", "plugins"
+        ))
 
-    print('Mods folder: ' + mods_folder)
-    print('Skyline plugins folder: ' + skyline_plugins_folder)
+
+        if not os.path.isdir(skyline_plugins_folder):
+            interface.Notification(root=app, prompt="Cannot find skyline folder, ignoring...")
+        break
 
     mod_tree = build_mod_tree(mods_folder)
     run_file_manager(mod_tree, mods_folder)
 
 def ask_user_for_sd(cancel_message, not_dir_message):
     result = askdirectory()
-    mods_folder = os.path.normpath(os.path.join(result, 'ultimate', 'mods'))
+    mods = os.path.normpath(os.path.join(result, 'ultimate', 'mods'))
     if not os.path.exists(result) or not os.path.isdir(result):
         interface.Notification(prompt=cancel_message, root=app)
-    elif not os.path.isdir(mods_folder):
+    elif not os.path.isdir(mods):
         interface.Notification(prompt=not_dir_message, root=app)
-    else:
-        return result
+
 
 def run_file_manager(mod_tree, current_path):
     mods_folder = current_path
@@ -79,5 +84,5 @@ def run_file_manager(mod_tree, current_path):
         update_mod_tree(mod_tree, current_path)
 
 
-app = interface.ModManager(ask_user_for_sd)
+app = interface.ModManager(ask_user_for_sd, main)
 app.mainloop()

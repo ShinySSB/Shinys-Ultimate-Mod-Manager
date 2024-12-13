@@ -2,8 +2,9 @@ import customtkinter as ctk
 from sys import platform
 from pygame import mixer
 
+
 class ModManager(ctk.CTk):
-    def __init__(self, ask_user_for_sd_func, main):
+    def __init__(self):
         super().__init__()
         self.title("Shiny's Ultimate Mod Manager")
         self.iconbitmap(r"images\icon.ico")
@@ -14,30 +15,26 @@ class ModManager(ctk.CTk):
         self.grid_columnconfigure(1, weight=1, pad=0)
         self.grid_rowconfigure(0, weight=2, pad=10)
 
-        self.ask_user_for_sd_func = ask_user_for_sd_func
         self.create_buttons()
         self.create_tabs()
         self.create_optionmenu()
-        self.main = main
-        self.main()
 
     def create_tabs(self):
         self.tabview = Tabview(self)
 
     def create_buttons(self):
-        self.sd_card_button = SDCardButton(self, self.ask_user_for_sd_func)
+        self.sd_card_button = SDCardButton(self)
 
     def create_optionmenu(self):
         self.theme_select = ThemeSelect(self)
 
 class SDCardButton(ctk.CTkButton):
-    def __init__(self, root, ask_user_for_sd_func):
+    def __init__(self, root):
         super().__init__(root)
 
-        self.ask_user_for_sd_func = ask_user_for_sd_func
         self.sd_card_button = ctk.CTkButton(root,
             text="Select SD Card",
-            command=self.sd_card_button_pressed,
+            command=self.sd_card_button_pressed(),
             height=50,
             corner_radius=50,
             font=("Arial", 15))
@@ -45,7 +42,8 @@ class SDCardButton(ctk.CTkButton):
         self.switch_sd: str = ''
 
     def sd_card_button_pressed(self):
-        self.switch_sd = self.ask_user_for_sd_func("Invalid directory, please try again.",
+        from main import ask_for_sd
+        self.switch_sd = ask_for_sd("Invalid directory, please try again.",
                                                    'Cannot find mods folder in directory.\n'
                                                    'Make sure you select the root of your SD card.\n'
                 'If you have no mods folder on your SD card,\n' r"create 'SD:\ultimate\mods\'")
@@ -108,3 +106,4 @@ class ThemeSelect(ctk.CTkOptionMenu):
 
     def change_theme(self, choice):
         ctk.set_appearance_mode(choice)
+

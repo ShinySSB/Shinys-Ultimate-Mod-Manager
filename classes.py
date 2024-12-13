@@ -18,7 +18,6 @@ class Stage(Character):
         self.series = series
 
 class Mod:
-    instances = []
     def __init__(self, name: str):
         self.name = name
 

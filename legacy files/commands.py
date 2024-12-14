@@ -1,7 +1,7 @@
 import os
 import shutil
 from classes import *
-import data.internal_names_and_series as info
+import internal_data.internal_names_and_series as info
 
 FIGHTER_INFO = info.FIGHTER_INFO
 STAGE_INFO = info.STAGE_INFO

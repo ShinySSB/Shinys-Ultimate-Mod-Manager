@@ -1,6 +1,15 @@
-import data.internal_names_and_series as info
+import internal_data.internal_names_and_series as info
 
 Series = info.Series
+
+class UserData:
+    def __init__(self):
+        self.switch_sd = None
+        self.mods_folder = None
+        self.skyline_plugins_folder = None
+        self.theme = "System"
+
+
 
 class Character:
     def __init__(self, name: str):

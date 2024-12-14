@@ -6,10 +6,11 @@ from pygame import mixer
 class ModManager(ctk.CTk):
     def __init__(self):
         super().__init__()
+
         self.title("Shiny's Ultimate Mod Manager")
         self.iconbitmap(r"images\icon.ico")
         self.geometry("1280x720")
-        ctk.set_appearance_mode("System")
+        self.load_settings()
 
         self.grid_columnconfigure(0, weight=80, pad=10)
         self.grid_columnconfigure(1, weight=1, pad=0)
@@ -18,6 +19,8 @@ class ModManager(ctk.CTk):
         self.create_buttons()
         self.create_tabs()
         self.create_optionmenu()
+
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def create_tabs(self):
         self.tabview = Tabview(self)
@@ -28,25 +31,37 @@ class ModManager(ctk.CTk):
     def create_optionmenu(self):
         self.theme_select = ThemeSelect(self)
 
+    def load_settings(self):
+        from functions import load_settings
+        settings = load_settings()
+        try:
+            ctk.set_appearance_mode(settings.get("theme"))
+        except Exception as e:
+            print(f'Could not set appearance mode: {e}')
+
+    def save_settings(self):
+        from functions import save_settings
+        save_settings()
+
+    def on_closing(self):
+        self.save_settings()
+        self.destroy()
+
 class SDCardButton(ctk.CTkButton):
     def __init__(self, root):
         super().__init__(root)
 
         self.sd_card_button = ctk.CTkButton(root,
             text="Select SD Card",
-            command=self.sd_card_button_pressed(),
+            command=self.sd_card_button_pressed,
             height=50,
             corner_radius=50,
             font=("Arial", 15))
         self.sd_card_button.grid(column=2, row=0, padx=25, pady=20, sticky="sew")
-        self.switch_sd: str = ''
 
     def sd_card_button_pressed(self):
-        from main import ask_for_sd
-        self.switch_sd = ask_for_sd("Invalid directory, please try again.",
-                                                   'Cannot find mods folder in directory.\n'
-                                                   'Make sure you select the root of your SD card.\n'
-                'If you have no mods folder on your SD card,\n' r"create 'SD:\ultimate\mods\'")
+        from functions import ask_for_sd
+        ask_for_sd(self)
 
 class Notification(ctk.CTkToplevel):
     def __init__(self, root, prompt):
@@ -58,7 +73,7 @@ class Notification(ctk.CTkToplevel):
         self.grab_set()
         mixer.init()
         self.sound = mixer.Sound("sounds/notification.wav")
-        self.sound.set_volume(float(0.5))
+        self.sound.set_volume(float(0.3))
         self.sound.play()
         self.resizable(False, False)
         self.grid_rowconfigure((0, 1), weight=1)
@@ -105,5 +120,6 @@ class ThemeSelect(ctk.CTkOptionMenu):
         self.theme_select.grid(column=2, row=0, padx=25, pady=30, sticky="new")
 
     def change_theme(self, choice):
+        from data import info
         ctk.set_appearance_mode(choice)
-
+        info.theme = choice

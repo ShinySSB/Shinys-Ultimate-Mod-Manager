@@ -1,7 +1,12 @@
-import customtkinter as ctk
+#builtins
 from sys import platform
+
+#external
+import customtkinter as ctk
 from pygame import mixer
 
+#self-made
+import internal_data.internal_names_and_series as internal
 
 class ModManager(ctk.CTk):
     def __init__(self):
@@ -36,8 +41,8 @@ class ModManager(ctk.CTk):
         settings = load_settings()
         try:
             ctk.set_appearance_mode(settings.get("theme"))
-        except Exception as e:
-            print(f'Could not set appearance mode: {e}')
+        except AttributeError:
+            ctk.set_appearance_mode("System")
 
     def save_settings(self):
         from functions import save_settings
@@ -92,15 +97,54 @@ class Tabview(ctk.CTkTabview):
         super().__init__(root)
 
         self.tabview = ctk.CTkTabview(root)
-        self.tabview.grid(row=0, column=0, columnspan=1, sticky="nsew")
+        self.tabview.grid(row=0, column=0, columnspan=1, sticky="nsew", padx=5, pady=5)
+
 
         self.tabview.add("Explorer")
         self.tabview.add("Characters")
         self.tabview.add("Stages")
         self.tabview.add("Edit Mod")
+        self.tabview.set("Characters")
 
-        self.label = ctk.CTkLabel(master=self.tabview.tab("Explorer"), text="")
-        self.label.pack(padx=20, pady=20)
+        self.tabview.tab("Characters").columnconfigure((0,1,2), weight=1, pad=0)
+        self.tabview.tab("Characters").rowconfigure(tuple(range(31)), weight=1, pad=0)
+
+
+        self.character_frame = ctk.CTkScrollableFrame(master=self.tabview.tab("Characters"),)
+        self.character_frame.grid(columnspan=3, rowspan=31, sticky="nsew")
+        self.character_frame.columnconfigure((0,1,2), weight=1, pad=0)
+        self.character_frame.rowconfigure(tuple(range(31)), weight=1, pad=0)
+        self.characters = []
+
+        self.character_index = 0
+        for key,val in internal.FIGHTER_INFO.items():
+            self.button = CharacterButton(self, text=val[1], master=self.character_frame)
+            col = self.character_index % 3
+            row = self.character_index // 3
+            self.button.grid(column=col, row=row, padx=5, pady=5, sticky="new")
+            self.characters.append(self.button)
+            self.character_index += 1
+
+        self.tabview.tab("Stages").columnconfigure(0, weight=1, pad=10)
+        self.tabview.tab("Stages").rowconfigure(0, weight=1, pad=10)
+
+class CharacterButton(ctk.CTkButton):
+    def __init__(self, root, **kwargs):
+        super().__init__(root)
+        self.master = kwargs.get("master")
+        self.text = kwargs.get("text")
+        self.character_button = ctk.CTkButton(master=self.master,
+                text=self.text,
+                font=("Arial", 15),
+                fg_color="transparent",
+                border_spacing=20,
+                height=75,
+                width=200,
+                command=self.button_pressed,
+                )
+
+    def button_pressed(self):
+        self.grid(pady=(5, 500))
 
 class ThemeSelect(ctk.CTkOptionMenu):
     def __init__(self, root):

@@ -118,30 +118,41 @@ class Tabview(ctk.CTkTabview):
 
         self.character_index = 0
         for key,val in internal.FIGHTER_INFO.items():
-            self.button = CharacterButton(self, text=val[1], master=self.character_frame)
+            self.button = ctk.CTkButton(master=self.character_frame,
+                                        text=val[1],
+                                        font=("Arial", 15),
+                                        fg_color="transparent",
+                                        border_spacing=20,
+                                        height=75,
+                                        width=200,
+                                        )
+            #self.button = CharacterButton(self, text=val[1], master=self.character_frame)
             col = self.character_index % 3
             row = self.character_index // 3
             self.button.grid(column=col, row=row, padx=5, pady=5, sticky="new")
             self.characters.append(self.button)
             self.character_index += 1
 
+        def character_button_pressed():
+            pass
+
         self.tabview.tab("Stages").columnconfigure(0, weight=1, pad=10)
         self.tabview.tab("Stages").rowconfigure(0, weight=1, pad=10)
 
-class CharacterButton(ctk.CTkButton):
-    def __init__(self, root, **kwargs):
-        super().__init__(root)
-        self.master = kwargs.get("master")
-        self.text = kwargs.get("text")
-        self.character_button = ctk.CTkButton(master=self.master,
-                text=self.text,
-                font=("Arial", 15),
-                fg_color="transparent",
-                border_spacing=20,
-                height=75,
-                width=200,
-                command=self.button_pressed,
-                )
+# class CharacterButton(ctk.CTkButton):
+#     def __init__(self, root, **kwargs):
+#         super().__init__(root)
+#         self.master = kwargs.get("master")
+#         self.text = kwargs.get("text")
+#         self.character_button = ctk.CTkButton(master=self.master,
+#                 text=self.text,
+#                 font=("Arial", 15),
+#                 fg_color="transparent",
+#                 border_spacing=20,
+#                 height=75,
+#                 width=200,
+#                 command=self.button_pressed,
+#                 )
 
     def button_pressed(self):
         self.grid(pady=(5, 500))

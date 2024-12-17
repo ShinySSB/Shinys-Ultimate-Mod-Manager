@@ -82,3 +82,5 @@ def load_settings():
     except Exception as e:
         print(f"Error loading settings: {e}")
         return None
+
+

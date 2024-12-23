@@ -104,11 +104,11 @@ class Tabview(ctk.CTkTabview):
         self.tabview.add("Characters")
         self.tabview.add("Stages")
         self.tabview.add("Edit Mod")
+
         self.tabview.set("Characters")
 
         self.tabview.tab("Characters").columnconfigure((0,1,2), weight=1, pad=0)
         self.tabview.tab("Characters").rowconfigure(tuple(range(31)), weight=1, pad=0)
-
 
         self.character_frame = ctk.CTkScrollableFrame(master=self.tabview.tab("Characters"),)
         self.character_frame.grid(columnspan=3, rowspan=31, sticky="nsew")
@@ -118,7 +118,7 @@ class Tabview(ctk.CTkTabview):
 
         self.character_index = 0
         for key,val in internal.FIGHTER_INFO.items():
-            self.button = ctk.CTkButton(master=self.character_frame,
+            self.button = CharacterButton(master=self.character_frame,
                                         text=val[1],
                                         font=("Arial", 15),
                                         fg_color="transparent",
@@ -126,36 +126,48 @@ class Tabview(ctk.CTkTabview):
                                         height=75,
                                         width=200,
                                         )
-            #self.button = CharacterButton(self, text=val[1], master=self.character_frame)
             col = self.character_index % 3
             row = self.character_index // 3
             self.button.grid(column=col, row=row, padx=5, pady=5, sticky="new")
             self.characters.append(self.button)
             self.character_index += 1
 
-        def character_button_pressed():
-            pass
-
         self.tabview.tab("Stages").columnconfigure(0, weight=1, pad=10)
         self.tabview.tab("Stages").rowconfigure(0, weight=1, pad=10)
 
-# class CharacterButton(ctk.CTkButton):
-#     def __init__(self, root, **kwargs):
-#         super().__init__(root)
-#         self.master = kwargs.get("master")
-#         self.text = kwargs.get("text")
-#         self.character_button = ctk.CTkButton(master=self.master,
-#                 text=self.text,
-#                 font=("Arial", 15),
-#                 fg_color="transparent",
-#                 border_spacing=20,
-#                 height=75,
-#                 width=200,
-#                 command=self.button_pressed,
-#                 )
+class CharacterButton(ctk.CTkButton):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        self.master = master
+        self.default_image = ctk.CTkImage(light_image=open("images\icon.ico"))
+        self.hover_image = ctk.CTkImage(light_image=open(r"images\notif.ico"))
+        self.hover_label = ctk.CTkLabel(self.master, image=self.hover_image, )
+        self.text = kwargs.get("text")
+        self.toggle = False
+        self.configure(text=self.text,
+                       command=self.button_pressed,
+                       compound="right",
+                       image=self.default_image,
+                       )
+
+        self.bind("<Enter>", self.on_hover)
+        self.bind("<Leave>", self.on_leave())
 
     def button_pressed(self):
-        self.grid(pady=(5, 500))
+        if not self.toggle:
+            self.toggle = True
+            self.grid(pady=(5, 150))
+        else:
+            self.toggle = False
+            self.grid(pady=5)
+
+    def on_hover(self):
+        x = self.winfo_rootx() - self.master.winfo_rootx()
+        y = self.winfo_rooty() - self.master.winfo_rooty()
+        self.hover_label.place(x=x, y=y)
+
+    def on_leave(self):
+        self.hover_label.forget()
 
 class ThemeSelect(ctk.CTkOptionMenu):
     def __init__(self, root):

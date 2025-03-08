@@ -3,6 +3,7 @@ from sys import platform
 
 #external
 import customtkinter as ctk
+from PIL import Image
 from pygame import mixer
 
 #self-made
@@ -139,8 +140,8 @@ class CharacterButton(ctk.CTkButton):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.master = master
-        self.default_image = ctk.CTkImage(light_image=open("images\icon.ico"))
-        self.hover_image = ctk.CTkImage(light_image=open(r"images\notif.ico"))
+        self.default_image = ctk.CTkImage(light_image=Image.open("images\icon.ico"))
+        self.hover_image = ctk.CTkImage(light_image=Image.open(r"images\notif.ico"))
         self.hover_label = ctk.CTkLabel(self.master, image=self.hover_image, )
         self.text = kwargs.get("text")
         self.toggle = False

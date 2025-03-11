@@ -1,4 +1,5 @@
 #builtins
+import os
 from sys import platform
 
 #external
@@ -93,6 +94,11 @@ class Notification(ctk.CTkToplevel):
             self.after(200, lambda: self.iconbitmap(r"images\notif.ico"))
 
 
+def get_fighter_image(fighter_name: str):
+    for name in os.listdir(r"images\fighters"):
+        if name.lower() == fighter_name.lower():
+            return os.path.join(r"images\fighters", name)
+
 class Tabview(ctk.CTkTabview):
     def __init__(self, root):
         super().__init__(root)
@@ -121,6 +127,7 @@ class Tabview(ctk.CTkTabview):
         for key,val in internal.FIGHTER_INFO.items():
             self.button = CharacterButton(master=self.character_frame,
                                         text=val[1],
+                                        fighter_image=get_fighter_image(val[1]),
                                         font=("Arial", 15),
                                         fg_color="transparent",
                                         border_spacing=20,
@@ -140,9 +147,9 @@ class CharacterButton(ctk.CTkButton):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
         self.master = master
-        self.default_image = ctk.CTkImage(light_image=Image.open("images\icon.ico"))
+        self.default_image = ctk.CTkImage(light_image=Image.open(kwargs.get("fighter_image")))
         self.hover_image = ctk.CTkImage(light_image=Image.open(r"images\notif.ico"))
-        self.hover_label = ctk.CTkLabel(self.master, image=self.hover_image, )
+        self.hover_label = ctk.CTkLabel(self.master, image=self.hover_image, text="")
         self.text = kwargs.get("text")
         self.toggle = False
         self.configure(text=self.text,
@@ -152,7 +159,7 @@ class CharacterButton(ctk.CTkButton):
                        )
 
         self.bind("<Enter>", self.on_hover)
-        self.bind("<Leave>", self.on_leave())
+        self.bind("<Leave>", self.on_leave)
 
     def button_pressed(self):
         if not self.toggle:
@@ -162,13 +169,20 @@ class CharacterButton(ctk.CTkButton):
             self.toggle = False
             self.grid(pady=5)
 
-    def on_hover(self):
+    def on_hover(self, event=None):
         x = self.winfo_rootx() - self.master.winfo_rootx()
         y = self.winfo_rooty() - self.master.winfo_rooty()
+        self.hover_label.grid(column=y, row=x, sticky="nsew")
         self.hover_label.place(x=x, y=y)
 
-    def on_leave(self):
+    def on_leave(self, event=None):
         self.hover_label.forget()
+
+    def slide_animation(self, start_width=int, end_width=int, step=10):
+        if start_width != end_width:
+            new_width = start_width + step if start_width < end_width else start_width - step
+            self.hover_label.place(width=new_width)
+            self.after(20, self.slide_animation, new_width, end_width, step)
 
 class ThemeSelect(ctk.CTkOptionMenu):
     def __init__(self, root):

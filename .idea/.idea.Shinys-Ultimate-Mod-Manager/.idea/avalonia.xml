@@ -3,7 +3,9 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="App.axaml" value="Shinys-Ultimate-Mod-Manager.csproj" />
         <entry key="MainWindow.axaml" value="Shinys-Ultimate-Mod-Manager.csproj" />
+        <entry key="Styles/AppDefaultStyles.axaml" value="Shinys-Ultimate-Mod-Manager.csproj" />
       </map>
     </option>
   </component>

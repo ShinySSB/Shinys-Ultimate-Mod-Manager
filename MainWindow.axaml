@@ -2,13 +2,59 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="600"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="600"
         Width="1024" Height="600"
         x:Class="Shinys_Ultimate_Mod_Manager.MainWindow"
         Title="Shiny's Ultimate Mod Manager">
         
-        <Grid Background="{DynamicResource PrimaryBackground}" ColumnDefinitions="200, *">
-                <Border Padding="20" Background="{DynamicResource PrimaryBackgroundGradient}">
+        <Grid Background="{DynamicResource PrimaryBackground}" ColumnDefinitions="*, 1, Auto">
+                
+                <Border Grid.Column="0">
+                        <!-- Main -->
+                        <TabControl 
+                                Margin="5" 
+                                Width="1200"
+                                Background="{DynamicResource PrimaryBackground}" 
+                                HorizontalAlignment="Center" >
+                                
+                                
+                                <TabItem 
+                                        Header="Characters"
+                                        FontSize="15">
+                                        
+                                        <TextBlock>Display characters here.</TextBlock>
+                                </TabItem>
+                                
+                                <TabItem Header="Stages" FontSize="15">
+                                        <TextBlock>Display stages here.</TextBlock>
+                                </TabItem>
+                                
+                                <TabItem Header="Download Mod" FontSize="15">
+                                        <TextBlock>Display mod download UI here.</TextBlock>
+                                </TabItem>
+                                
+                        </TabControl>
+                </Border>
+                
+                <Border Grid.Column="1" Background="#444">
+                        <!-- 1 Pixel Wide border -->
+                </Border>
+                
+                <Border Grid.Column="2" Padding="15" Background="{DynamicResource SidebarBackground}">
+                        <!-- Sidebar -->
+                        <Grid RowDefinitions="*, Auto">
+                                <StackPanel>
+                                        <Image x:Name="LogoDark" 
+                                               Width="150" 
+                                               Source="Assets/Mod Manager logo dark.png"
+                                               RenderOptions.BitmapInterpolationMode="HighQuality"></Image>
+                                </StackPanel>
+                                <ComboBox Grid.Row="1" Name="Theme" SelectedIndex="0" Background="SlateGray">
+                                        <ComboBoxItem Name="System">System</ComboBoxItem>
+                                        <ComboBoxItem Name="Dark">Dark</ComboBoxItem>
+                                        <ComboBoxItem Name="Light">Light</ComboBoxItem>
+                                </ComboBox>
+                        </Grid>
                 </Border>
         </Grid>
         

@@ -3,17 +3,19 @@
              x:Class="Shinys_Ultimate_Mod_Manager.App"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
+    
+    
+             
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="Styles/AppDefaultStyles.axaml"></StyleInclude>
     </Application.Styles>
              
              <Application.Resources>
-                 <SolidColorBrush x:Key="PrimaryBackground">#000000</SolidColorBrush>
-                 <LinearGradientBrush x:Key="PrimaryBackgroundGradient" StartPoint="0%, 0%" EndPoint="100%, 0%">
-                     <GradientStop Offset="0" Color="#616161"></GradientStop>
-                     <GradientStop Offset="1" Color="#000000"></GradientStop>
+                 <SolidColorBrush x:Key="PrimaryBackground">#212121</SolidColorBrush>
+                 <LinearGradientBrush x:Key="SidebarBackground" StartPoint="0%, 0%" EndPoint="0%, 100%">
+                     <GradientStop Offset="0" Color="#212121"></GradientStop>
+                     <GradientStop Offset="1" Color="#393939"></GradientStop>
                  </LinearGradientBrush>
              </Application.Resources>
 </Application>

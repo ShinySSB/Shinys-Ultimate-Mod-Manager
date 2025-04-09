@@ -11,5 +11,9 @@
              
              <Application.Resources>
                  <SolidColorBrush x:Key="PrimaryBackground">#000000</SolidColorBrush>
+                 <LinearGradientBrush x:Key="PrimaryBackgroundGradient" StartPoint="0%, 0%" EndPoint="100%, 0%">
+                     <GradientStop Offset="0" Color="#616161"></GradientStop>
+                     <GradientStop Offset="1" Color="#000000"></GradientStop>
+                 </LinearGradientBrush>
              </Application.Resources>
 </Application>

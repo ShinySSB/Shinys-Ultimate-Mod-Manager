@@ -43,13 +43,19 @@
                 <Border Grid.Column="2" Padding="15" Background="{DynamicResource SidebarBackground}">
                         <!-- Sidebar -->
                         <Grid RowDefinitions="*, Auto">
-                                <StackPanel>
+                                <StackPanel Spacing="20">
                                         <Image x:Name="LogoDark" 
                                                Width="150" 
                                                Source="Assets/Mod Manager logo dark.png"
                                                RenderOptions.BitmapInterpolationMode="HighQuality"></Image>
+                                        
+                                        <Button 
+                                                Content="Select SD Card" 
+                                                HorizontalAlignment="Stretch">
+                                                
+                                        </Button>
                                 </StackPanel>
-                                <ComboBox Grid.Row="1" Name="Theme" SelectedIndex="0" Background="SlateGray">
+                                <ComboBox Grid.Row="1" Name="Theme" SelectedIndex="0" >
                                         <ComboBoxItem Name="System">System</ComboBoxItem>
                                         <ComboBoxItem Name="Dark">Dark</ComboBoxItem>
                                         <ComboBoxItem Name="Light">Light</ComboBoxItem>

@@ -10,12 +10,4 @@
         <FluentTheme />
         <StyleInclude Source="Styles/AppDefaultStyles.axaml"></StyleInclude>
     </Application.Styles>
-             
-             <Application.Resources>
-                 <SolidColorBrush x:Key="PrimaryBackground">#212121</SolidColorBrush>
-                 <LinearGradientBrush x:Key="SidebarBackground" StartPoint="0%, 0%" EndPoint="0%, 100%">
-                     <GradientStop Offset="0" Color="#212121"></GradientStop>
-                     <GradientStop Offset="1" Color="#393939"></GradientStop>
-                 </LinearGradientBrush>
-             </Application.Resources>
 </Application>

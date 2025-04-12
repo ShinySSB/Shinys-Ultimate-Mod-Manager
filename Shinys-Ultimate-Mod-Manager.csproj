@@ -20,5 +20,7 @@
         </PackageReference>
         <AvaloniaResource Include="Assets\Mod Manager logo dark.png" Name="LogoDark"/>
         <AvaloniaResource Include="Assets\Mod Manager logo light.png" Name="LogoLight"/>
+        <AvaloniaResource Include="Themes/DarkTheme.axaml"/>
+        <AvaloniaResource Include="Themes/LightTheme.axaml"/>
     </ItemGroup>
 </Project>

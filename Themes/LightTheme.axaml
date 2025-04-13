@@ -1,10 +1,29 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        
     <Design.PreviewWith>
-        <Border Padding="20">
+        <Border Background="{DynamicResource SidebarBackground}" Padding="20">
             <!-- Add Controls for Previewer Here -->
         </Border>
     </Design.PreviewWith>
 
     <!-- Add Styles Here -->
+    <Style>
+        <Style.Resources>
+            <!-- Using Light Logo Image -->
+            <Bitmap x:Key="Logo">avares://Shinys-Ultimate-Mod-Manager/Assets/Mod Manager logo dark.png</Bitmap>
+            
+            <!-- Define Theme Resources -->
+            <SolidColorBrush x:Key="PrimaryBackground">#FFFFFF</SolidColorBrush>
+            <SolidColorBrush x:Key="PrimaryForeground">#212121</SolidColorBrush>
+                 
+            <LinearGradientBrush x:Key="SidebarBackground" StartPoint="0%, 0%" EndPoint="0%, 100%">
+                <GradientStop Offset="0" Color="#FFFFFF"></GradientStop>
+                <GradientStop Offset="1" Color="#E0E0E0"></GradientStop>
+            </LinearGradientBrush>
+                 
+            <SolidColorBrush x:Key="PrimaryHoverBackground">#F0F0F0</SolidColorBrush>
+            <SolidColorBrush x:Key="PrimaryHoverForeground">#212121</SolidColorBrush>
+        </Style.Resources>
+    </Style>
 </Styles>

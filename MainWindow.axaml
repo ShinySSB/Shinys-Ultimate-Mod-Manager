@@ -44,9 +44,9 @@
                         <!-- Sidebar -->
                         <Grid RowDefinitions="*, Auto">
                                 <StackPanel Spacing="20">
-                                        <Image x:Name="LogoDark" 
+                                        <Image x:Name="Logo" 
                                                Width="150" 
-                                               Source="Assets/Mod Manager logo dark.png"
+                                               Source="{DynamicResource Logo}"
                                                RenderOptions.BitmapInterpolationMode="HighQuality"></Image>
                                         
                                         <Button 

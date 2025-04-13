@@ -1,15 +1,25 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui"
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-
+        
+    <Design.PreviewWith>
+        <Border Background="{DynamicResource SidebarBackground}" Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
     <!-- Add Styles Here -->
-    <SolidColorBrush x:Key="PrimaryBackground">#212121</SolidColorBrush>
-    <SolidColorBrush x:Key="PrimaryForeground">#CFCFCF</SolidColorBrush>
+    <Style>
+        <Style.Resources>
+            <Bitmap x:Key="Logo">avares://Shinys-Ultimate-Mod-Manager/Assets/Mod Manager logo light.png</Bitmap>
+            <SolidColorBrush x:Key="PrimaryBackground">#212121</SolidColorBrush>
+            <SolidColorBrush x:Key="PrimaryForeground">#CFCFCF</SolidColorBrush>
                  
-    <LinearGradientBrush x:Key="SidebarBackground" StartPoint="0%, 0%" EndPoint="0%, 100%">
-        <GradientStop Offset="0" Color="#212121"></GradientStop>
-        <GradientStop Offset="1" Color="#393939"></GradientStop>
-    </LinearGradientBrush>
+            <LinearGradientBrush x:Key="SidebarBackground" StartPoint="0%, 0%" EndPoint="0%, 100%">
+                <GradientStop Offset="0" Color="#212121"></GradientStop>
+                <GradientStop Offset="1" Color="#393939"></GradientStop>
+            </LinearGradientBrush>
                  
-    <SolidColorBrush x:Key="PrimaryHoverBackground">#404040</SolidColorBrush>
-    <SolidColorBrush x:Key="PrimaryHoverForeground">#EBEBEB</SolidColorBrush>
-</ResourceDictionary>
+            <SolidColorBrush x:Key="PrimaryHoverBackground">#404040</SolidColorBrush>
+            <SolidColorBrush x:Key="PrimaryHoverForeground">#EBEBEB</SolidColorBrush>
+        </Style.Resources>
+    </Style>
+</Styles>

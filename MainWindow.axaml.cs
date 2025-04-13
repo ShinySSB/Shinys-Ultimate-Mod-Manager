@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
@@ -20,13 +21,12 @@ public partial class MainWindow : Window
         InitializeComponent();
         
         var savedTheme = LoadSavedTheme();
-        if (!string.IsNullOrWhiteSpace(savedTheme))
-            ApplyTheme(savedTheme);
-        else
+
+        if (string.IsNullOrWhiteSpace(savedTheme))
         {
             savedTheme = "System";
-            ApplyTheme(savedTheme);
         }
+        ApplyTheme(savedTheme);
         
         
         Theme.SelectionChanged += ThemeSelector_SelectionChanged;
@@ -81,13 +81,29 @@ public partial class MainWindow : Window
     {
         var prefs = new UserPreferences { Theme = selectedTheme };
         var json = JsonSerializer.Serialize(prefs);
+        var path = GetPreferencesFilePath();
+        Console.WriteLine($"Saving preferences: {selectedTheme} at {path}");
         File.WriteAllText(GetPreferencesFilePath(), json);
     }
 
     private string? LoadSavedTheme()
     {
         string path = GetPreferencesFilePath();
-        return File.Exists(path) ? File.ReadAllText(path) : null;
+        if (File.Exists(path))
+        {
+            try
+            {
+                var json = File.ReadAllText(path);
+                var prefs = JsonSerializer.Deserialize<UserPreferences>(json);
+                Console.WriteLine($"Loaded preferences: {prefs.Theme}");
+                return prefs?.Theme;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Failed to load preferences from file: " + e);
+            }
+        }
+        return null;
     }
 
     private Uri? GetSystemThemeUri()
@@ -111,9 +127,10 @@ public partial class MainWindow : Window
         else
         {
             theme = "Dark";
+            Console.WriteLine("Failed to get system theme. Defaulting to Dark.");
         }
         
-        Console.WriteLine($"Detected system theme: {theme}");
+        Console.WriteLine($"Selected theme: {theme}");
         return new Uri($"avares://Shinys-Ultimate-Mod-Manager/Themes/{theme}Theme.axaml");
     }
 

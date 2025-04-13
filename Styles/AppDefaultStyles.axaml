@@ -32,6 +32,10 @@
         <Setter Property="Background" Value="{DynamicResource PrimaryHoverBackground}"></Setter>
     </Style>
     <Style Selector="ComboBox:pointerover /template/ ContentPresenter /template/ TextBlock">
-        <Setter Property="Foreground" Value="Red"></Setter>
+        <Setter Property="Foreground" Value="Green"></Setter>
+    </Style>
+    
+    <Style Selector="ItemsControl.ItemsPanel">
+        <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"></Setter>
     </Style>
 </Styles>

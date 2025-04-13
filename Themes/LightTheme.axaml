@@ -10,7 +10,7 @@
     <!-- Add Styles Here -->
     <Style>
         <Style.Resources>
-            <!-- Using Light Logo Image -->
+            <!-- Using Dark Logo Image -->
             <Bitmap x:Key="Logo">avares://Shinys-Ultimate-Mod-Manager/Assets/Mod Manager logo dark.png</Bitmap>
             
             <!-- Define Theme Resources -->

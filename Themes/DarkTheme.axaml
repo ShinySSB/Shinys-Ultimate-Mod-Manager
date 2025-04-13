@@ -4,22 +4,37 @@
     <Design.PreviewWith>
         <Border Background="{DynamicResource SidebarBackground}" Padding="20">
             <!-- Add Controls for Previewer Here -->
+            <ComboBox Background="{DynamicResource PrimaryBackground}" 
+                      Foreground="{DynamicResource PrimaryForeground}" 
+                      Width="100"
+                      SelectedIndex="0">
+                <ComboBoxItem Content="Item 1"></ComboBoxItem>
+                <ComboBoxItem Content="Item 2"></ComboBoxItem>
+            </ComboBox>
         </Border>
     </Design.PreviewWith>
+    
     <!-- Add Styles Here -->
     <Style>
         <Style.Resources>
+            <!-- Logo -->
             <Bitmap x:Key="Logo">avares://Shinys-Ultimate-Mod-Manager/Assets/Mod Manager logo light.png</Bitmap>
+            
+            <!-- For most elements -->
             <SolidColorBrush x:Key="PrimaryBackground">#212121</SolidColorBrush>
             <SolidColorBrush x:Key="PrimaryForeground">#CFCFCF</SolidColorBrush>
-                 
+            
+            <!-- Sidebar and some other things -->
             <LinearGradientBrush x:Key="SidebarBackground" StartPoint="0%, 0%" EndPoint="0%, 100%">
                 <GradientStop Offset="0" Color="#212121"></GradientStop>
                 <GradientStop Offset="1" Color="#393939"></GradientStop>
             </LinearGradientBrush>
-                 
+            
+            <!-- For hovering on elements -->
             <SolidColorBrush x:Key="PrimaryHoverBackground">#404040</SolidColorBrush>
             <SolidColorBrush x:Key="PrimaryHoverForeground">#EBEBEB</SolidColorBrush>
+            
+            
         </Style.Resources>
     </Style>
 </Styles>

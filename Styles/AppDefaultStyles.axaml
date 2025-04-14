@@ -1,7 +1,7 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
-        <Border Padding="20" Background="{DynamicResource SidebarBackground}" Width="200">
+        <Border Padding="50" Background="{DynamicResource SidebarBackground}" Width="200">
             <!-- Add Controls for Previewer Here -->
             <ComboBox Name="ComboBox" SelectedIndex="0">
                 <ComboBoxItem Content="Item1"></ComboBoxItem>
@@ -22,6 +22,10 @@
         <Setter Property="Background" Value="{DynamicResource PrimaryHoverBackground}"></Setter>
     </Style>
     
+    <Style Selector="ContentPresenter">
+        <Setter Property="TextAlignment" Value="Center"></Setter>
+    </Style>
+    
     <Style Selector="ComboBox">
         <Setter Property="FontSize" Value="15"></Setter>
         <Setter Property="HorizontalAlignment" Value="Stretch"></Setter>
@@ -31,11 +35,12 @@
     <Style Selector="ComboBox:pointerover /template/ Border">
         <Setter Property="Background" Value="{DynamicResource PrimaryHoverBackground}"></Setter>
     </Style>
-    <Style Selector="ComboBox:pointerover /template/ ContentPresenter /template/ TextBlock">
-        <Setter Property="Foreground" Value="Green"></Setter>
-    </Style>
-    
-    <Style Selector="ItemsControl.ItemsPanel">
+    <Style Selector="ComboBoxItem">
         <Setter Property="Background" Value="{DynamicResource PrimaryBackground}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryForeground}"></Setter>
+    </Style>
+    <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource PrimaryHoverBackground}"></Setter>
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryHoverForeground}"></Setter>
     </Style>
 </Styles>

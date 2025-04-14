@@ -66,6 +66,13 @@ public partial class MainWindow : Window
         {
             Source = url
         };
+        switch (selectedTheme)
+        {
+            case "System": Theme.SelectedIndex = 0; break;
+            case "Dark": Theme.SelectedIndex = 1; break;
+            case "Light": Theme.SelectedIndex = 2; break;
+        }
+        
         styles?.Insert(1, theme);
     }
 
@@ -95,7 +102,7 @@ public partial class MainWindow : Window
             {
                 var json = File.ReadAllText(path);
                 var prefs = JsonSerializer.Deserialize<UserPreferences>(json);
-                Console.WriteLine($"Loaded preferences: {prefs.Theme}");
+                Console.WriteLine($"Loaded preferences: {prefs?.Theme}");
                 return prefs?.Theme;
             }
             catch (Exception e)
@@ -138,18 +145,21 @@ public partial class MainWindow : Window
     {
         const string registryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
         const string valueName = "AppsUseLightTheme";
-
+        
         try
         {
+            Console.WriteLine("Getting Windows system theme...");
+#pragma warning disable CA1416
             using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(registryKeyPath);
             if (key?.GetValue(valueName) is int value)
+#pragma warning restore CA1416
             {
                 return value == 0 ? "Dark" : "Light";
             }
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Failed to get Windows System Theme.\n{e}");
+            Console.WriteLine($"Failed to get Windows System Theme. Defaulting to Dark.\n{e}");
         }
         return "Dark";
     }
@@ -158,6 +168,7 @@ public partial class MainWindow : Window
     {
         try
         {
+            Console.WriteLine("Getting Linux system theme...");
             var data = GetLinuxEnvironment();
             string fileName = data.Item1;
             string arguments = data.Item2;
@@ -182,10 +193,8 @@ public partial class MainWindow : Window
             {
                 return "Dark";
             }
-            else
-            {
-                return "Light";
-            }
+
+            return "Light";
         }
         catch (Exception e)
         {
@@ -199,9 +208,14 @@ public partial class MainWindow : Window
         string? de = Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP");
         
         if (string.IsNullOrEmpty(de))
+        {
+            Console.WriteLine("No XDG_CURRENT_DESKTOP environment found. Trying with gnome.");
             de = "gnome";
+        }
         
         de = de.Split(":", StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.ToLower() ?? "gnome";
+        
+        Console.WriteLine($"Linux environment: {de}");
         
         return de.ToLower() switch
         {
@@ -218,6 +232,7 @@ public partial class MainWindow : Window
     {
         try
         {
+            Console.WriteLine("Getting Mac system theme...");
             var process = new Process
             {
                 StartInfo = new ProcessStartInfo
@@ -255,4 +270,5 @@ public partial class MainWindow : Window
 public class UserPreferences
 {
     public string Theme { get; set; } = "System";
+    public string SdCardPath { get; set; } = "";
 }
